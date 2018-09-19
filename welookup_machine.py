@@ -11,18 +11,17 @@ import pandas as pd
 import sys
 
 class Both_collect:
-    def __init__(self,aim_columns_name,match_columns_name,needed_columns,datasoure_left,datasoure_right,lable,combine = True):
+    def __init__(self,datasoure_left,datasoure_right,aim_columns_name,match_columns_name,needed_columns,lable,combine = True):
         self.aim_columns_name = aim_columns_name.split("$")
         self.match_columns_name = match_columns_name.split("$")
         self.needed_columns = needed_columns.split("$")
         self.Data_orginal_left = datasoure_left
         self.Data_orginal_right = datasoure_right
-        _need_columns = self.match_columns_name
+        _need_columns = self.match_columns_name.copy()
         _need_columns += [value for value in self.needed_columns]
         self.Data_orginal_right = self.Data_orginal_right.loc[:,_need_columns]
         self.combine = combine
         self.lable = lable
-
 
     def matched_key_deal(self):
         _needed_columns_deal = self.needed_columns.copy()
@@ -32,7 +31,6 @@ class Both_collect:
         _needed_columns_deal.append('key')
         Data_orginal_right_deal.columns = _needed_columns_deal
         _needed_columns_deal.pop()
-
         if len(self.match_columns_name)>1:
             for match_columns_num in range(1,len(self.match_columns_name)):
                 _needed_columns_deal.append(self.match_columns_name[match_columns_num])
@@ -45,35 +43,32 @@ class Both_collect:
         return Data_orginal_right_deal
 
 
-    def combine(self,data):
+    def combine_tool(self,data):
         self.data = data
         for i in range(len(self.data)):
-            if data[i] != "":
+            if self.data[i] != "":
                 return data[i]
                 break
 
     def aim_match(self):
         _Data_orginal_right_deal = self.matched_key_deal()
         _needed_columns_deal2 = self.needed_columns.copy()
-        _needed_columns_deal2.append(self.match_columns_name[0])
+        _needed_columns_deal2.append('key')
         welookup_data = pd.merge(left=self.Data_orginal_left, right=_Data_orginal_right_deal, how='left',left_on=self.aim_columns_name[0], right_on='key')
         if len(self.aim_columns_name)>1:
             for aim_col_num in range(1,len(self.aim_columns_name)):
                 welookup_data = pd.merge(left = welookup_data , right= _Data_orginal_right_deal,how='left',left_on=self.aim_columns_name[aim_col_num],right_on = 'key')
             welookup_data = welookup_data.fillna("")
-        _combine_columns = welookup_data.columns.tolist()[len(welookup_data.columns.tolist())-len(self.aim_columns_name)*(len(self.needed_columns)+1):]
+            _combine_columns = welookup_data.columns.tolist()[len(welookup_data.columns.tolist())-len(self.aim_columns_name)*(len(self.needed_columns)+1):]
         if  self.combine:
             for columns in _needed_columns_deal2:
                 _combine_col = [col for col in _combine_columns if col.startswith(f'{columns}')]
-                welookup_data[f'{columns}_{self.lable}'] = _Data_orginal_right_deal[_combine_col].apply(self.combine,axis = 1)
-            welookup_data.drop(_combine_columns,axis = 1)
+                welookup_data[f'{columns}_{self.lable}'] = welookup_data[list(_combine_col)].apply(self.combine_tool,axis = 1)
+            for del_col in _combine_columns:
+                del welookup_data[del_col]
             return welookup_data
         else:
             return welookup_data
-
-
-
-
 
 
 class welookup:
@@ -91,7 +86,7 @@ class welookup:
         '''
         self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns = aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns
         self.lable,self.combine = lable,combine
-        print(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns,self.lable,self.combine)
+
 
     def summary(self):
         '''
@@ -113,7 +108,8 @@ class welookup:
 if __name__ == '__main__':
     Data_orginal_right = pd.read_excel(r"C:\Users\85442\Desktop\match_test.xlsx")
     Data_orginal_left = pd.read_excel(r"C:\Users\85442\Desktop\aim_test.xlsx")
-    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='ff$fd$ee',match_columns_name='key',needed_columns='b$c',lable='测试').summary()
+    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='ff$fd$ee',match_columns_name='c$key',needed_columns='b',lable='测试').summary()
     print(run)
+    # print(run)
     # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
     #                match_info=sys.argv)
