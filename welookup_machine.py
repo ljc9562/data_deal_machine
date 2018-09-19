@@ -47,4 +47,4 @@ class welookup:
 if __name__ == '__main__':
     run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
                    match_info=sys.argv)
-    # adfdd wowj few fdsflsj
+    # gx
