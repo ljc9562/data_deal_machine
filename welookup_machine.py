@@ -50,6 +50,7 @@ class Both_collect:
         for i in range(len(self.data)):
             if data[i] != "":
                 return data[i]
+                break
 
     def aim_match(self):
         _Data_orginal_right_deal = self.matched_key_deal()
@@ -90,6 +91,7 @@ class welookup:
         '''
         self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns = aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns
         self.lable,self.combine = lable,combine
+        print(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns,self.lable,self.combine)
 
     def summary(self):
         '''
@@ -104,10 +106,14 @@ class welookup:
         :return: combine_dataframe 是一个数据结构是pandas的Dataframe（合并后的结果）
         -----------------------------------------------------------------------------------------------------------------
         '''
-        combine_dataframe = Both_collect(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns)
+        combine_dataframe = Both_collect(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns,self.lable,self.combine).aim_match()
         return combine_dataframe
 
 
 if __name__ == '__main__':
-    run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
-                   match_info=sys.argv)
+    Data_orginal_right = pd.read_excel(r"C:\Users\85442\Desktop\match_test.xlsx")
+    Data_orginal_left = pd.read_excel(r"C:\Users\85442\Desktop\aim_test.xlsx")
+    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='ff$fd$ee',match_columns_name='key',needed_columns='b$c',lable='测试').summary()
+    print(run)
+    # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
+    #                match_info=sys.argv)
