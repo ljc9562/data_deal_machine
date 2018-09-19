@@ -54,19 +54,21 @@ class Both_collect:
         _Data_orginal_right_deal = self.matched_key_deal()
         _needed_columns_deal2 = self.needed_columns.copy()
         _needed_columns_deal2.append('key')
-        welookup_data = pd.merge(left=self.Data_orginal_left, right=_Data_orginal_right_deal, how='left',left_on=self.aim_columns_name[0], right_on='key')
+        welookup_data = pd.merge(left=self.Data_orginal_left, right=_Data_orginal_right_deal, how='left',left_on=self.aim_columns_name[0], right_on='key').fillna("")
         if len(self.aim_columns_name)>1:
             for aim_col_num in range(1,len(self.aim_columns_name)):
                 welookup_data = pd.merge(left = welookup_data , right= _Data_orginal_right_deal,how='left',left_on=self.aim_columns_name[aim_col_num],right_on = 'key')
             welookup_data = welookup_data.fillna("")
             _combine_columns = welookup_data.columns.tolist()[len(welookup_data.columns.tolist())-len(self.aim_columns_name)*(len(self.needed_columns)+1):]
-        if  self.combine:
-            for columns in _needed_columns_deal2:
-                _combine_col = [col for col in _combine_columns if col.startswith(f'{columns}')]
-                welookup_data[f'{columns}_{self.lable}'] = welookup_data[list(_combine_col)].apply(self.combine_tool,axis = 1)
-            for del_col in _combine_columns:
-                del welookup_data[del_col]
-            return welookup_data
+            if  self.combine:
+                for columns in _needed_columns_deal2:
+                    _combine_col = [col for col in _combine_columns if col.startswith(f'{columns}')]
+                    welookup_data[f'{columns}_{self.lable}'] = welookup_data[list(_combine_col)].apply(self.combine_tool,axis = 1)
+                for del_col in _combine_columns:
+                    del welookup_data[del_col]
+                return welookup_data
+            else:
+                return welookup_data
         else:
             return welookup_data
 
