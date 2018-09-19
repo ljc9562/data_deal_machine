@@ -8,46 +8,47 @@
 #email:854426089@qq.com
 
 import pandas as pd
-from os import getcwd, listdir
 import sys
-
-
-class Input_Data:
-    def __init__(self, aim_soure, match_soure):
-        self.aim = aim_soure
-        self.match = match_soure
-
-    def whats_this(self):
-        pass
-
-    def read_file(self):
-        return self.aim,self.match
-
 
 class Both_collect:
     def __init__(self,aim_columns_name,match_columns_name,needed_columns,datasoure_left,datasoure_right):
-        self.aim_columns_name = aim_columns_name
-        self.match_columns_name = match_columns_name
-        self.needed_columns = needed_columns
+        self.aim_columns_name = aim_columns_name.split("$")
+        self.match_columns_name = match_columns_name.split("$")
+        self.needed_columns = needed_columns.split("$")
         self.Data_orginal_left = datasoure_left
         self.Data_orginal_right = datasoure_right
+        _need_columns = self.match_columns_name
+        _need_columns += [value for value in self.needed_columns]
+        self.Data_orginal_right = self.Data_orginal_right.loc[:,_need_columns]
 
-    def one_on_one(self):
+    def matched_key_deal(self):
+        _needed_columns_deal = self.needed_columns.copy()
+        _needed_columns_deal.append(self.match_columns_name[0])
+        self.Data_orginal_right_deal = self.Data_orginal_right.loc[:,_needed_columns_deal]
+        _needed_columns_deal.pop()
+        _needed_columns_deal.append('key')
+        self.Data_orginal_right_deal.columns = _needed_columns_deal
+        _needed_columns_deal.pop()
 
-    def one_on_more(self):
+        if len(self.match_columns_name)>1:
+            for match_columns_num in range(1,len(self.match_columns_name)):
+                _needed_columns_deal.append(self.match_columns_name[match_columns_num])
+                Data_orginal_right_deal_more = self.Data_orginal_right.loc[:, _needed_columns_deal]
+                _needed_columns_deal.pop()
+                _needed_columns_deal.append('key')
+                Data_orginal_right_deal_more.columns = _needed_columns_deal
+                _needed_columns_deal.pop()
+                self.Data_orginal_right_deal = pd.concat([self.Data_orginal_right_deal,Data_orginal_right_deal_more],axis=0,ignore_index=True)
+        return self.Data_orginal_right_deal
 
-    def more_on_more(self):
+    def aim_match(self):
+        welookup_data = pd.merge(left=self.Data_orginal_left, right=self.Data_orginal_right_deal, how='left',left_on=self.aim_columns_name[0], right_on='key')
+        for aim_col_num in range(1,len(self.aim_columns_name)):
+            welookup_data = pd.merge(left = welookup_data , right= self.Data_orginal_right_deal,how='left',left_on=self.aim_columns_name[aim_col_num],right_on = 'key')
+
 
     def judge_match_relationship(self):
-        if len(self.aim_columns_name) == 1 and len(self.match_columns_name) == 1:
-            _one_on_one = Both_collect.one_on_one()
-            return  _one_on_one
-        elif len(self.aim_columns_name) == 1 and len(self.match_columns_name) > 1:
-            _one_on_more = Both_collect.more_on_more()
-            return  _one_on_more
-        elif len(self.aim_columns_name) > 1 and len(self.match_columns_name) > 1:
-            _more_on_more = Both_collect.more_on_more()
-            return _more_on_more
+        if len(self.match_columns_name) > 1:
 
 
 class welookup:
@@ -71,13 +72,12 @@ class welookup:
         参数说明：
         Input_Data(aim_soure[目标数据],match_soure[被匹配数据]) ps:输入的数据类型：dataframe
         Both_collect(aim_columns_name[目标匹配的key列],match_columns_name[被匹配的key列],needed_columns[需要匹配内容的列],->
-        ->  aim_soure[左表数据源dataframe],match_soure[右表数据源dataframe])  ps:多个列名用“,”分割
+        ->  aim_soure[左表数据源dataframe],match_soure[右表数据源dataframe])  ps:多个列名用“$”分割
         -----------------------------------------------------------------------------------------------------------------
         :return: combine_dataframe 是一个数据结构是pandas的Dataframe（合并后的结果）
         -----------------------------------------------------------------------------------------------------------------
         '''
-        aim_soure, match_soure = Input_Data(self.aim_soure,self.match_soure).read_file()
-        combine_dataframe = Both_collect(self.aim_columns_name,self.match_columns_name,self.needed_columns,aim_soure,match_soure)
+        combine_dataframe = Both_collect(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns)
         return combine_dataframe
 
 
