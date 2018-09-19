@@ -62,6 +62,7 @@ class Both_collect:
             for columns in _needed_columns_deal2:
                 welookup_data[f'{columns}_{self.lable}'] = ""
 
+
                 return welookup_data
         else:
             return welookup_data
