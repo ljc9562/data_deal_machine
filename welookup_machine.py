@@ -106,8 +106,8 @@ class welookup:
 
 
 if __name__ == '__main__':
-    Data_orginal_right = pd.read_excel(r"C:\Users\85442\Desktop\match_test.xlsx")
-    Data_orginal_left = pd.read_excel(r"C:\Users\85442\Desktop\aim_test.xlsx")
+    Data_orginal_left = pd.read_excel(r"C:\Users\85442\Desktop\match_test.xlsx")
+    Data_orginal_right = pd.read_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\query-hive-128763现金券.xlsx")
     run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='ff$fd$ee',match_columns_name='c$key',needed_columns='b',lable='测试').summary()
     print(run)
     # print(run)
