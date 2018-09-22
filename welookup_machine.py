@@ -19,6 +19,7 @@ class Both_collect:
         self.Data_orginal_right = datasoure_right
         _need_columns = self.match_columns_name.copy()
         _need_columns += [value for value in self.needed_columns]
+        print(_need_columns)
         self.Data_orginal_right = self.Data_orginal_right.loc[:,_need_columns]
         self.combine = combine
         self.lable = lable
@@ -40,6 +41,9 @@ class Both_collect:
                 Data_orginal_right_deal_more.columns = _needed_columns_deal
                 _needed_columns_deal.pop()
                 Data_orginal_right_deal = pd.concat([Data_orginal_right_deal,Data_orginal_right_deal_more],axis=0,ignore_index=True)
+        Data_orginal_right_deal = Data_orginal_right_deal[Data_orginal_right_deal.key != ""]
+        Data_orginal_right_deal = Data_orginal_right_deal.dropna()
+        print(Data_orginal_right_deal)
         return Data_orginal_right_deal
 
 
@@ -113,9 +117,9 @@ class welookup:
 
 
 if __name__ == '__main__':
-    Data_orginal_left = pd.read_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\婚庆\20180920婚庆后期统计_工作记录.xlsx",sheetname='F_婚庆客咨',converters={'手机号':str,'客咨id':str}).loc[:,['客资id','手机号']]
-    Data_orginal_right = pd.read_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\婚庆\20180920婚庆后期统计_工作记录.xlsx",sheetname = 'F_现金券' ,converters={'手机号':str,'love_id':str})
-    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='手机号',match_columns_name='手机号',needed_columns='店铺名称$行业id$love_id',lable='现金券').summary()
+    Data_orginal_left = pd.read_excel(r"C:\Users\85442\Desktop\aim_test.xlsx",sheetname=0,converters={'ff':str,'fd':str,'ee':str})
+    Data_orginal_right = pd.read_excel(r"C:\Users\85442\Desktop\match_test.xlsx",sheetname = 0 ,converters={'key':str},keep_default_na = True)
+    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='ff$fd$ee',match_columns_name='key',needed_columns='b$c',lable='测试').summary()
     print(run)
     # print(run)
     # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
