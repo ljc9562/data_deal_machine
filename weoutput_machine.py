@@ -4,7 +4,9 @@
 ###
 
 class Output:
-    def __init__(self, output_way,file_name):
+    def __init__(self,frame):
+        self.frame = frame
+
 
     def sql_output(self):
 
