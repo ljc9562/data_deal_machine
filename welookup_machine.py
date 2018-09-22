@@ -60,16 +60,21 @@ class Both_collect:
                 welookup_data = pd.merge(left = welookup_data , right= _Data_orginal_right_deal,how='left',left_on=self.aim_columns_name[aim_col_num],right_on = 'key')
             welookup_data = welookup_data.fillna("")
             _combine_columns = welookup_data.columns.tolist()[len(welookup_data.columns.tolist())-len(self.aim_columns_name)*(len(self.needed_columns)+1):]
+            # print(_combine_columns)
             if  self.combine:
                 for columns in _needed_columns_deal2:
                     _combine_col = [col for col in _combine_columns if col.startswith(f'{columns}')]
                     welookup_data[f'{columns}_{self.lable}'] = welookup_data[list(_combine_col)].apply(self.combine_tool,axis = 1)
+                    print(f'{columns}_{self.lable}')
                 for del_col in _combine_columns:
                     del welookup_data[del_col]
                 return welookup_data
             else:
                 return welookup_data
         else:
+            c = welookup_data.columns.tolist()[0:len(_needed_columns_deal2)-len(self.needed_columns)+1]
+            c+= [i+f"_{self.lable}" for i in _needed_columns_deal2]
+            welookup_data.columns = [c]
             return welookup_data
 
 
@@ -108,9 +113,9 @@ class welookup:
 
 
 if __name__ == '__main__':
-    Data_orginal_left = pd.read_excel(r"C:\Users\85442\Desktop\match_test.xlsx")
-    Data_orginal_right = pd.read_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\query-hive-128763现金券.xlsx")
-    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='ff$fd$ee',match_columns_name='c$key',needed_columns='b',lable='测试').summary()
+    Data_orginal_left = pd.read_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\婚庆\20180920婚庆后期统计_工作记录.xlsx",sheetname='F_婚庆客咨',converters={'手机号':str,'客咨id':str}).loc[:,['客资id','手机号']]
+    Data_orginal_right = pd.read_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\婚庆\20180920婚庆后期统计_工作记录.xlsx",sheetname = 'F_现金券' ,converters={'手机号':str,'love_id':str})
+    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='手机号',match_columns_name='手机号',needed_columns='店铺名称$行业id$love_id',lable='现金券').summary()
     print(run)
     # print(run)
     # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
