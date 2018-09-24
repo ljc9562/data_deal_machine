@@ -1,0 +1,6 @@
+"有效$$((shuju['一次电话有效'].str.contain('[dfs]{3}'))|(shuju['一次索票'].str.contain('.*sdfdfs')))&([dsf])"
+
+正则生成测试
+@	shuju['
+%>	'].str.contain('
+<%	')
