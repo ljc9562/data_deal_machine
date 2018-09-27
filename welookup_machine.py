@@ -125,8 +125,6 @@ if __name__ == '__main__':
     Data_orginal_left = pd.read_excel(r"F:\ljc_file\每日工作\20180925异常处理 类型对比表\电话类型统计_一遍_2018夏_20180627.xlsx",sheetname=0,converters={'婚博会id':str},keep_default_na = False)
     Data_orginal_right = pd.read_excel(r"F:\ljc_file\每日工作\20180925异常处理 类型对比表\20180926展中数据.xlsx",sheetname=0,converters={'婚博会id':str},keep_default_na = False)
     run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='婚博会id',match_columns_name='婚博会id',needed_columns='展中联系$展中未联系$展中情况',lable='展中').summary()
-    # run.to_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\酒店\sdfsf.xlsx",index=False)
     print(run)
-    # print(run)
     # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
     #                match_info=sys.argv)
