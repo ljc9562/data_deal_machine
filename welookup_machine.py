@@ -33,7 +33,6 @@ class Both_collect:
         Data_orginal_right_deal.columns = _needed_columns_deal
         _needed_columns_deal.pop()
         _needed_columns_deal = list(set(_needed_columns_deal))
-        # print(_needed_columns_deal)
         if len(self.match_columns_name)>1:
             for match_columns_num in range(1,len(self.match_columns_name)):
                 _needed_columns_deal.append(self.match_columns_name[match_columns_num])
@@ -43,8 +42,13 @@ class Both_collect:
                 Data_orginal_right_deal_more.columns = _needed_columns_deal
                 _needed_columns_deal.pop()
                 Data_orginal_right_deal = pd.concat([Data_orginal_right_deal,Data_orginal_right_deal_more],axis=0,ignore_index=True)
-        Data_orginal_right_deal = Data_orginal_right_deal[Data_orginal_right_deal.key != ""]
-        Data_orginal_right_deal = Data_orginal_right_deal.dropna()
+        Data_orginal_right_deal = Data_orginal_right_deal.loc[:,:]
+        Data_orginal_right_deal['key'] = Data_orginal_right_deal['key'].str.strip()
+        try:
+            Data_orginal_right_deal = Data_orginal_right_deal[Data_orginal_right_deal.key != ""]
+        except:
+            pass
+        # Data_orginal_right_deal = Data_orginal_right_deal.dropna()
         return Data_orginal_right_deal
 
 
@@ -77,11 +81,8 @@ class Both_collect:
                 return welookup_data
         else:
             c = self.Data_orginal_left.columns.tolist()
-            print(c)
             c+= [i+f"_{self.lable}" for i in _needed_columns_deal2]
-            # print(c)
             welookup_data.columns = [c]
-            # print(welookup_data)
             del welookup_data[f'key_{self.lable}']
             return welookup_data
 
@@ -121,10 +122,10 @@ class welookup:
 
 
 if __name__ == '__main__':
-    Data_orginal_left = pd.read_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\酒店\20180913酒店后期统计_工作记录.xlsx",sheetname='分配表2',converters={'m_sale_customer_allot.store_id':str})
-    Data_orginal_right = pd.read_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\酒店\酒店商家id(1).xlsx" ,converters={'ID':str,'商家名称':str})
-    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='m_sale_customer_allot.store_id',match_columns_name='ID',needed_columns='商家名称',lable='商家').summary()
-    run.to_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\酒店\sdfsf.xlsx",index=False)
+    Data_orginal_left = pd.read_excel(r"F:\ljc_file\每日工作\20180925异常处理 类型对比表\电话类型统计_一遍_2018夏_20180627.xlsx",sheetname=0,converters={'婚博会id':str},keep_default_na = False)
+    Data_orginal_right = pd.read_excel(r"F:\ljc_file\每日工作\20180925异常处理 类型对比表\20180926展中数据.xlsx",sheetname=0,converters={'婚博会id':str},keep_default_na = False)
+    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='婚博会id',match_columns_name='婚博会id',needed_columns='展中联系$展中未联系$展中情况',lable='展中').summary()
+    # run.to_excel(r"F:\ljc_file\每日工作\20180912 后期统计\酒店婚庆后期统计\酒店\sdfsf.xlsx",index=False)
     print(run)
     # print(run)
     # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
