@@ -57,7 +57,6 @@ class Date_clean:
             return re.findall("[\u4e00-\u9fa5]+",self.date)[0]
         except:
             return ""
-            # print(date[0])
 
     def main(self):
         self.source_data = self.source_data.loc[:,[self.key,self.column_name]]
@@ -75,9 +74,9 @@ class Date_deal:
 
     def date_diff(self,date):
         # print(date[0])
-        self.aim_year = int(self.aim_date[0])
-        self.aim_month = int(self.aim_date[1])
-        self.aim_day = int(self.aim_date[2])
+        self.aim_year = int(self.aim_date[0])   #年份
+        self.aim_month = int(self.aim_date[1])  #月份
+        self.aim_day = int(self.aim_date[2])    #日期
         # print(self.aim_year,self.aim_month,self.aim_day)
         try:
             date = date[0].split('-')
