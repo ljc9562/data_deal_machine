@@ -4,6 +4,3 @@
 @	shuju['
 %>	'].str.contain('
 <%	')
-
-aaa
-aaaaa
