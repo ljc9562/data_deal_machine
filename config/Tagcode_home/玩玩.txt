@@ -1,0 +1,29 @@
+#category:script
+#author:jc
+#cn_name:""
+#markdowm:作用
+#传入frame
+
+new_column_name = '催催'
+get_columns = ['name','citycode']
+
+def aa(data):
+	city = data[0]
+	citycode = data[1]
+	if '地区' in city:
+		return '地区'
+	elif citycode >700:
+		return '大于700'
+	else:
+		return '母鸡'
+		
+
+		
+
+frame[new_column_name] = frame[get_columns].apply(aa,axis = 1)
+		
+
+
+		
+# citycode	name	provide	level
+# 393	濮阳市	河南省	city
