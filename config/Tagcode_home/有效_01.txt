@@ -1,3 +1,4 @@
+#category:re
 #author:jc
 #cn_name:
 #markdowm:作用
@@ -6,7 +7,6 @@
 #若输出是按列操作 需要加入frame[...]
 #re表达式格式: ""
 
-script = 're'   #re or script
 new_column_name = '区域'
 columns_type = 'str'
 

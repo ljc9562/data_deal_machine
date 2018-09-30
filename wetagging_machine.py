@@ -13,10 +13,11 @@ class Tagcode_deal:
 
     def submit_file(self):
         local_eva = {}
-        exec(open(f"{self.file_dir}/{self.file_name}",encoding='UTF-8').read(),local_eva)
-        if local_eva['script'] == 're':
+        category = open(f"{self.file_dir}/{self.file_name}", encoding='utf-8').read().split("\n", 1)[0].split(':')[1]  #判断第一行声明的类型
+        if category == 're':
+            exec(open(f"{self.file_dir}/{self.file_name}", encoding='UTF-8').read(), local_eva)
             return local_eva['new_column_name'],local_eva['columns_type'],local_eva['rule'],local_eva['else_value']
-        elif local_eva['script'] == 'script':
+        elif category == 'script':
             pass
 
     def re_famula_tranfrom(self):
