@@ -4,7 +4,6 @@
 #3 excel模块控制模式  （暂停，未了解接口情况）
 
 import pandas as pd
-import os
 
 class Tagcode_deal:
     def __init__(self,file_name):
@@ -16,27 +15,27 @@ class Tagcode_deal:
         category = open(f"{self.file_dir}/{self.file_name}", encoding='utf-8').read().split("\n", 1)[0].split(':')[1]  #判断第一行声明的类型
         if category == 're':
             exec(open(f"{self.file_dir}/{self.file_name}", encoding='UTF-8').read(), local_eva)
-            return local_eva['new_column_name'],local_eva['columns_type'],local_eva['rule'],local_eva['else_value']
+            base_info, _rule, _else_value =  [local_eva['new_column_name'],local_eva['columns_type']],local_eva['rule'],local_eva['else_value']
+            rule_info = [(rules.split("->", 1)[0], rules.split("->", 1)[1]) for rules in _rule]
+            return base_info, rule_info, _else_value,category
         elif category == 'script':
-            pass
-
-    def re_famula_tranfrom(self):
-        *base_info, _rule, _else_value = self.submit_file()
-        rule_info = [(rules.split("->",1)[0],rules.split("->",1)[1]) for rules in _rule]
-        return base_info,rule_info,_else_value
+            return f"{self.file_dir}/{self.file_name}",category
 
 
 class wetagging:
     def __init__(self,frame,file,debug = False):
         self.frame = frame
-        self.tagfile_info,self.tag_rule,self.tag_else_value = Tagcode_deal(file).re_famula_tranfrom()
-        self.new_columns,self.columns_type = self.tagfile_info
-        self.frame[self.new_columns] = ""  #新建列
+        try:
+            self.tagfile_info,self.tag_rule,self.tag_else_value,self.category = Tagcode_deal(file).submit_file()
+            self.new_columns,self.columns_type = self.tagfile_info
+            self.frame[self.new_columns] = ""  #新建列
+        except:
+            self.script_dir,self.category = Tagcode_deal(file).submit_file()
         self.debug = debug
 
-    def hitting_tag(self):
+    def re_hitting_tag(self,frame):
+        frame = frame
         index_already_exist = []
-        frame = self.frame
         for _rule in self.tag_rule:
             print(f'正在处理字段:{self.tagfile_info[0]}\n正在处理规则:{_rule}')
             tag_index = frame[eval(_rule[1])].index.tolist()
@@ -53,16 +52,26 @@ class wetagging:
             frame.loc[else_index, self.new_columns] = eval(self.tag_else_value)
         else:
             frame.loc[else_index, self.new_columns] = self.tag_else_value
-        print(self.new_columns)
+        print(f'else值:{self.tag_else_value}\n数量{len(else_index)}')
         frame[self.new_columns] = frame[self.new_columns].astype(self.columns_type )
         return frame
 
+    def script_hitting_tag(self):
+        pass
 
+    def summary(self):
+        frame = self.frame
+        if self.category == 'script':
+            _local_eva = {}
+            exec(open(self.script_dir, encoding='UTF-8').read())
+            return frame
+        else:
+            result = self.re_hitting_tag(frame)
+            return result
 
 
 
 if __name__ == '__main__':
-    # base_info, rule_info, else_value = Tagcode_deal('有效_01.txt').re_famula_tranfrom()
-    # print(base_info, rule_info, else_value)
-    pp = pd.read_excel(r"C:\Users\85442\Desktop\省市區整理.xlsx",sheetname='區域')
-    aa = wetagging(pp,'有效_01.txt').hitting_tag()
+    pp = pd.read_excel("./config/test_file/省市區整理.xlsx",sheetname='區域')
+    aa = wetagging(pp,'玩玩.txt').summary()
+    print(aa)
