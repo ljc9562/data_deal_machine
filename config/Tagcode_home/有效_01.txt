@@ -4,7 +4,7 @@
 #markdowm:作用
 #版本:2018冬-20181001
 #辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
-#逻辑符号 1.和["&"]  2.且["|"]  3.非["~"]
+#逻辑符号 1.和["&"]  2.且["|"]  3.非["~"] 
 #若输出是按列操作 需要加入frame[...]
 #re表达式格式: ""
 
@@ -19,7 +19,8 @@ rule = \
 "地区哦->(frame['name'].str.contains('^周',regex = True))",
 
 #计算大于700
-"大于700哦->(frame['citycode']>=700)"
+"frame['provide']->(frame['citycode']>=700)"
 ]
 
 else_value = "真不知到"
+

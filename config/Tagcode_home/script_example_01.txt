@@ -16,9 +16,6 @@ def aa(data):
 		return '大于700'
 	else:
 		return '母鸡'
-		
-
-		
 
 frame[new_column_name] = frame[get_columns].apply(aa,axis = 1)
 		

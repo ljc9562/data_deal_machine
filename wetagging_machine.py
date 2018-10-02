@@ -42,7 +42,10 @@ class wetagging:
             tag_index = list(set(tag_index).difference(index_already_exist))
 
             if 'frame' in _rule[0]:
+                # print(_rule[0])
                 frame.loc[tag_index,self.new_columns] = eval(_rule[0])
+                print(eval(_rule[0]))
+                print(frame.loc[tag_index,:].head(10))
             else:
                 frame.loc[tag_index,self.new_columns] = _rule[0]
             index_already_exist +=[i for i in tag_index]
@@ -73,5 +76,5 @@ class wetagging:
 
 if __name__ == '__main__':
     pp = pd.read_excel("./config/test_file/省市區整理.xlsx",sheetname='區域')
-    aa = wetagging(pp,'玩玩.txt').summary()
-    print(aa)
+    aa = wetagging(pp,'有效_01.txt').summary()
+    # print(aa)
