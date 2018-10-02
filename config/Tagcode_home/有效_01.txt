@@ -19,8 +19,8 @@ rule = \
 "地区哦->(frame['name'].str.contains('^周',regex = True))",
 
 #计算大于700
-"frame['provide']->(frame['citycode']>=700)"
+"大于700->(frame['citycode']>=700)"
 ]
 
-else_value = "真不知到"
+else_value = "未知"
 

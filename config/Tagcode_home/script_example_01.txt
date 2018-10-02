@@ -4,7 +4,7 @@
 #markdowm:作用
 #传入frame
 
-new_column_name = '催催'
+new_column_name = '地区情况'
 get_columns = ['name','citycode']
 
 def aa(data):
@@ -15,7 +15,7 @@ def aa(data):
 	elif citycode >700:
 		return '大于700'
 	else:
-		return '母鸡'
+		return '未知'
 
 frame[new_column_name] = frame[get_columns].apply(aa,axis = 1)
 		

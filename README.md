@@ -34,30 +34,6 @@
 2. columns_type(列的字段数据类型) columns_type = 'str'
 3. rule(标签的规则) 独立条件的格式写法 独立条件 = "标签值->(frame['列名'][逻辑符/逻辑函数/正则][value])"
 多个条件满足写法 例如:"标签值->((独立条件)|(独立条件))&(独立条件)"--多个标签写法 例如["标签","标签"]
-举例rule写法:\
-rule = \
-[\
-\#例子1:开头为周的地区标签为 周(该处使用了正则,所以regex = True)\
-\"周->(frame['name'].str.contains('^周',regex = True))",\
-\
-\#例子2:citycode列 大于700的数据 标签为 大于700哦\
-\"大于700哦->(frame['citycode']>=700)"\
-\
-\#例子3:开头为周的地区标签为 周 且 citycode列 大于700的数据 标签为 开头周和大于700  \
-\"开头周和大于700->(frame['name'].str.contains('^周',regex = True))&(frame['citycode']>=700)"\
-\
-\#例子4:同时值多个包含情况 例子 name字段包含 市或地区 的 便签为 地区
-\"地区->(frame['name'].str.contains('市|地区'))\
-\
-\#例子5:输出的标签值是其他列的值或其他列的替换情况等 标记为name列的值 + '_地区' 这个后缀(也可以'地区_'+frame['name'])\
-\"frame['name']+'_地区'->(frame['name'].str.contains('市|地区'))\
-\
-\#例子6:输出的标签值是列的替换值(详情pd.Dataframe.replace())\
-\#精确替换 把对应字段中的a值替换为b\
-\"frame['name'].replace("a","b")->(frame['name'].str.contains('市|地区'))\
-\#模糊替换 把对应字段中的a值替换为b\
-\"frame['name'].replace("a","b",regex = True)->(frame['name'].str.contains('市|地区'))\
-\]
 
 4. else_value rule中都没有情况的填充值 例子:
 \
@@ -67,10 +43,79 @@ else_value = "未知地址"
 \
 \
 \#未知的情况  标签为  '未知地址_'+列['name']值\
-else_value = "'未知地址_' + frame['name']"
+else_value = "'未知地址_' + frame['name']"\
+\
+完整代码块:
+>
+    #category:re
+    #author:jc
+    #cn_name:
+    #markdowm:作用
+    #版本:2018冬-20181001
+    #辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+    #逻辑符号 1.和["&"]  2.且["|"]  3.非["~"] 
+    #若输出是按列操作 需要加入frame[...]
+    #re表达式格式: ""
+    
+    new_column_name = '区域'
+    columns_type = 'str'
+    
+    
+    #format
+    rule = 
+    [
+    #例子1:开头为周的地区标签为 周(该处使用了正则,所以regex = True)
+    "周->(frame['name'].str.contains('^周',regex = True))",
+    
+    #例子2:citycode列 大于700的数据 标签为 大于700哦
+    "大于700哦->(frame['citycode']>=700)"
+    
+    #例子3:开头为周的地区标签为 周 且 citycode列 大于700的数据 标签为 开头周和大于700  
+    "开头周和大于700->(frame['name'].str.contains('^周',regex = True))&(frame['citycode']>=700)"
+    
+    #例子4:同时值多个包含情况 例子 name字段包含 市或地区 的 便签为 地区
+    "地区->(frame['name'].str.contains('市|地区'))
+    
+    #例子5:输出的标签值是其他列的值或其他列的替换情况等 标记为name列的值 + '_地区' 这个后缀(也可以'地区_'+frame['name'])
+    "frame['name']+'_地区'->(frame['name'].str.contains('市|地区'))
+    
+    #例子6:输出的标签值是列的替换值(详情pd.Dataframe.replace())
+    #精确替换 把对应字段中的a值替换为b
+    "frame['name'].replace("a","b")->(frame['name'].str.contains('市|地区'))
+    #模糊替换 把对应字段中的a值替换为b
+    "frame['name'].replace("a","b",regex = True)->(frame['name'].str.contains('市|地区'))
+    ]
+    
+    else_value = "未知"
+
+
 
 ---
 - ####标签文件类型为**script** 的标签配置
 1. script方法原理:该方法是被包裹在函数中,传入的是一个完整的frame
 2. 编写自定义的任何处理数据的脚本即可,可以导入任何外部的库
-3. 最后return的数据都需要赋值给frame才能完成完整的过程
+3. 最后return的数据都需要赋值给frame才能完成完整的过程,因为源码中处理这一块的函数是(return frame)\
+\
+代码块:
+>
+    #category:script
+    #author:jc
+    #cn_name:
+    #markdowm:作用
+    #版本:2018冬-20181001
+    #传入frame 可以做任何外部库的操作 以下仅仅是简单操作
+    new_column_name = '地区情况'
+    get_columns = ['name','citycode']
+    
+    def aa(data):
+        city = data[0]
+        citycode = data[1]
+        if '地区' in city:
+            return '地区'
+        elif citycode >700:
+            return '大于700'
+        else:
+            return '未知'
+    
+    frame[new_column_name] = frame[get_columns].apply(aa,axis = 1)
+
