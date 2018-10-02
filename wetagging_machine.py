@@ -59,12 +59,14 @@ class wetagging:
         frame[self.new_columns] = frame[self.new_columns].astype(self.columns_type )
         return frame
 
-    def script_hitting_tag(self):
-        pass
-
     def summary(self):
+        '''
+        提交标签
+        :return:
+        '''
         frame = self.frame
         if self.category == 'script':
+            #script 标签脚本提交
             _local_eva = {}
             exec(open(self.script_dir, encoding='UTF-8').read())
             return frame
@@ -72,9 +74,23 @@ class wetagging:
             result = self.re_hitting_tag(frame)
             return result
 
+class wetagging_group:
+    def __init__(self,frame,group_name):
+        self.frame = frame
+        self.group_name = group_name
+
+    def summary(self):
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
     pp = pd.read_excel("./config/test_file/省市區整理.xlsx",sheetname='區域')
-    aa = wetagging(pp,'有效_01.txt').summary()
+    for i in ['有效_01.txt','script_example_01.txt']:
+         aa = wetagging(pp,i).summary()
     # print(aa)

@@ -108,5 +108,5 @@ class Date_deal:
 
 if __name__ == '__main__':
     data = pd.read_excel(r"F:\ljc_file\每日工作\20180927 处理异常\日期测试.xlsx",sheetname=0)
-    date2 = Date_deal(frame=data,name='婚礼日期',key='key').summary()
+    date_summary = Date_deal(frame=data,name='婚礼日期',key='key').summary()
     date2.to_excel(r"F:\ljc_file\每日工作\20180927 处理异常\日期测试test.xlsx",index = False)
