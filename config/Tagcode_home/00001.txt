@@ -2,10 +2,12 @@
 #author:jc
 #cn_name:""
 #markdowm:作用
-#传入frame
+#辅助:
 
 new_column_name = '地区情况'
 get_columns = ['name','citycode']
+
+##############################################################
 
 def aa(data):
 	city = data[0]
