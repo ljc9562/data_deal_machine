@@ -16,7 +16,7 @@ columns_type = 'str'
 rule = \
 [
 #算有区域的地方
-"地区哦->(frame['name'].str.contains('^周',regex = True))",
+"市区->(frame['name'].str.contains('河源|珠海'))",
 
 #计算大于700
 "大于700->(frame['citycode']>=700)"

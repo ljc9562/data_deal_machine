@@ -4,7 +4,9 @@
 #3 excel模块控制模式  （暂停，未了解接口情况）
 
 import pandas as pd
-import matplotlib
+from IPython.display import display
+import plotly.offline as ply
+import re
 
 
 class Tagcode_deal:
@@ -37,7 +39,7 @@ class Tagcode_deal:
 
 
 class Wetagging:
-    def __init__(self,frame,file,debug = False):
+    def __init__(self,frame,file,debug = False,col = None):
         '''
         提供对外部导入标签配置文件处理的工具
         :param frame: 导入已经转化为Dataframe的数据
@@ -52,6 +54,7 @@ class Wetagging:
         except:
             self.script_dir,self.category = Tagcode_deal(file).submit_file()
         self.debug = debug
+        self.col = col
 
     def re_hitting_tag(self,frame):
         '''
@@ -63,9 +66,11 @@ class Wetagging:
         index_already_exist = []
         info_record = pd.DataFrame(columns=['正在处理字段','标签','正在处理规则','数量','累计值'])
         index_record = []
+        used_deal_columns = []  #获取rule里面所需要的列
         for _rule in self.tag_rule:
             tag_index = frame[eval(_rule[1])].index.tolist()
             index_record += [(_rule[0], tag_index , list(set(tag_index).difference(index_already_exist)))]
+            used_deal_columns += [value for value in re.findall("\['(.*?)\']",_rule[1])] ##获取rule里面['****']的列名
             tag_index = list(set(tag_index).difference(index_already_exist))
             if 'frame' in _rule[0]:
                 frame.loc[tag_index,self.new_columns] = eval(_rule[0])
@@ -74,6 +79,7 @@ class Wetagging:
             index_already_exist +=[i for i in tag_index]
             base_info_record = {'正在处理字段':self.tagfile_info[0],'标签':_rule[0],'正在处理规则':_rule[1],'数量':int(len(tag_index)),'累计值':int(len(index_already_exist))}
             info_record = info_record.append(base_info_record,ignore_index=True)
+        used_deal_columns = (list(set(used_deal_columns))) #对用到过的列进行删重处理
         else_index = list(set(frame.index.tolist()).difference(index_already_exist))
         if 'frame' in self.tag_else_value:
             frame.loc[else_index, self.new_columns] = eval(self.tag_else_value)
@@ -82,7 +88,7 @@ class Wetagging:
         info_record = info_record.append({'正在处理字段':'else值','标签':self.tag_else_value,'正在处理规则':'','数量':int(len(else_index)),'累计值':len(frame.index)},ignore_index=True)
         index_record += [(self.tag_else_value,else_index,else_index)]
         frame[self.new_columns] = frame[self.new_columns].astype(self.columns_type )
-        return frame,info_record,index_record
+        return frame,info_record,index_record,used_deal_columns,self.new_columns
 
     def script_hitting_tag(self):
         frame = self.frame
@@ -110,27 +116,131 @@ class Wetagging:
             if self.debug == False:
                 return _frame
             elif self.debug == True:
-                return _new_column_name,_get_columns
+                debug_summary = self.script_debug_deal(_frame,_new_column_name,_get_columns)
+                return debug_summary
+
         elif self.category == 're':
-            _frame,_info_record,_index_record= self.re_hitting_tag(self.frame)
+            _frame,_info_record,_index_record,_used_deal_columns,_new_column_name= self.re_hitting_tag(self.frame)
             if self.debug == False:
                 return _frame
             elif self.debug == True:
-                debug_summary = self.re_debug_deal(_info_record,_index_record)
+                debug_summary = self.re_debug_deal(_frame,_used_deal_columns,_info_record,_new_column_name)
                 return debug_summary
 
-    def re_debug_deal(self, info_record, index_record):
-        if self.category == 're':
-            return info_record
+    def re_debug_deal(self, frame,used_deal_columns,info_record,new_column_name):
+        print(new_column_name,self.col)
+        _frame = frame
+        _info_record = info_record
+        _new_column_name = new_column_name
+        if self.col == None:
+            _used_deal_columns = used_deal_columns
+        else:
+            _used_deal_columns = self.col
+        print('规则对应的标签数量情况:\n----------------------------------------------------------------------------')
+        display(_info_record)  #输出格式化的Dataframe
+        print('----------------------------------------------------------------------------')
+        for num in range(len(_used_deal_columns)):
+            get = [_used_deal_columns[num],_new_column_name]
+            temp = _frame.loc[:,get].copy()
+            Sankey_deals_summary = Sankey_plot(temp).run() #请勿return
 
 
+    def script_debug_deal(self,frame,new_column_name,need_columns):
+        _frame = frame
+        _new_column_name = new_column_name.replace("'","")
+        if self.col == None:
+            _used_deal_columns = need_columns
+        else:
+            _used_deal_columns = self.col
+        for num in range(len(_used_deal_columns)):
+            get = [_used_deal_columns[num], _new_column_name]
+            temp = _frame.loc[:, get].copy()
+            Sankey_deals_summary = Sankey_plot(temp).run()  #请勿return
 
-    def script_debug_deal(self,new_column_name,get_columns):
-        pass
 
+class Sankey_deals:
+    def __init__(self,frame):
+        self.frame = frame
+
+
+    def sankey_format_deal(self):
+        columns_name = self.frame.columns.tolist()
+        layout_name = " - ".join(columns_name)
+        self.frame[columns_name[0]] = self.frame[columns_name[0]].fillna(f'{columns_name[0]}_空白')  #填充空值
+        self.frame[columns_name[1]] = self.frame[columns_name[1]].fillna(f'{columns_name[1]}_空白')
+        self.frame[columns_name[0]]  = self.frame[columns_name[0]].astype(str)
+        self.frame[columns_name[1]]  = self.frame[columns_name[1]].astype(str)
+        col_lable_all = list(set(self.frame.iloc[:, 0].tolist()))
+        col_lable_all.sort(key=self.frame.iloc[:, 0].tolist().index)  # 根据索引排序
+        col_lable = list(set(self.frame.iloc[:, 1].tolist()))
+        col_lable.sort(key=self.frame.iloc[:, 1].tolist().index) # 根据索引排序
+        col_lable_all += [i for i in col_lable]
+        temp_frame = pd.DataFrame({'col_lable_all': col_lable_all})
+        temp_frame['col_num'] = temp_frame.index.tolist()
+        self.frame['combine'] = self.frame[columns_name[0]] + "-" + self.frame[columns_name[1]]
+        g1 = pd.DataFrame({'value': self.frame["combine"].groupby(self.frame["combine"]).count()}).reset_index()
+        g1.add_suffix('_temp')
+        merge_frame = pd.merge(left=self.frame, right=temp_frame, how='left', left_on=columns_name[0], right_on='col_lable_all')
+        merge_frame = pd.merge(left=merge_frame, right=temp_frame, how='left', left_on=columns_name[1], right_on='col_lable_all',
+                         suffixes=['_soure', '_target', ])
+        merge_frame = pd.merge(left=merge_frame, right=g1, how='left', left_on='combine', right_on='combine',
+                         suffixes=['_soure', '_target', ])
+        output_frame = merge_frame.drop_duplicates('combine').copy()
+        # display(output_frame.iloc[:,[0,1,2,4,6,7]])
+
+        lable = col_lable_all
+
+        a = 1
+        color = []
+        while a < len(lable) + 1:
+            color += ['green']
+            a += 1
+
+        source = output_frame.loc[:, 'col_num_soure'].tolist()
+        target = output_frame.loc[:, 'col_num_target'].tolist()
+        value = output_frame.loc[:, 'value'].tolist()
+        return layout_name,lable,color,source,target,value
+
+
+class Sankey_plot:
+    def __init__(self,frame):
+        self.title,self.lable,self.color,self.source,self.target,self.value = Sankey_deals(frame).sankey_format_deal()
+
+
+    def format(self):
+        data = dict(
+            type='sankey',
+            node=dict(
+                pad=16,
+                thickness=50,
+                line=dict(
+                    width=0.5
+                ),
+                label=self.lable,
+                color=self.color
+            ),
+            link=dict(
+                source=self.source,
+                target=self.target,
+                value=self.value
+            ))
+
+        layout = dict(
+            title=f"{self.title}",
+            font=dict(
+                size=13
+            )
+        )
+        fig = dict(data=[data], layout=layout)
+        return fig
+
+    def run(self):
+        fig = self.format()
+        ply.init_notebook_mode(connected=True)
+        ply.iplot(fig, validate=False)
 
 
 if __name__ == '__main__':
-    pp = pd.read_excel("./config/test_file/省市區整理.xlsx",sheetname='區域')
+    pp = pd.read_excel(r"C:\Users\85442\Desktop\省市區整理.xlsx",sheetname='Sheet1',keep_default_na = True)
     for i in ['00002.txt']:
-         aa = Wetagging(pp,i,debug=True).summary()
+         aa = Wetagging(pp,i,debug=True,col=['name']).summary()

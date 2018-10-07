@@ -12,7 +12,7 @@ get_columns = ['name','citycode']
 def aa(data):
 	city = data[0]
 	citycode = data[1]
-	if '地区' in city:
+	if '河源' in city or '珠海' in city:
 		return '地区'
 	elif citycode >700:
 		return '大于700'
