@@ -7,7 +7,7 @@ import pandas as pd
 from IPython.display import display
 import plotly.offline as ply
 import re
-from os import listdir
+from os import listdir,popen
 from shutil import copy
 
 
@@ -22,9 +22,17 @@ def Wetagging_create(kind,name):
         if kind == 're':
             copy('./config/template/template_re.txt',f'./config/Tagcode_home/{name}')
             print(f're配置文件:{name}.txt 创建成功')
+            try:
+                popen(f"D:\\Notepad++\\notepad++.exe  ./config/Tagcode_home/{name}")
+            except:
+                print('没安装notepad++,请手动打开')
         elif kind == 'script':
             copy('./config/template/template_script.txt', f'./config/Tagcode_home/{name}')
             print(f'script配置文件:{name}.txt 创建成功')
+            try:
+                popen(f"D:\\Notepad++\\notepad++.exe  ./config/Tagcode_home/{name}")
+            except:
+                print('没安装notepad++,请手动打开')
 
 class Tagcode_deal:
     '''
