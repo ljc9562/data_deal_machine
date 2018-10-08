@@ -5,7 +5,7 @@
 from sqlalchemy import create_engine
 import pandas as pd
 
-class Output:
+class Weoutput:
     def __init__(self,frame,way):
         self.frame = frame
         self.way = way

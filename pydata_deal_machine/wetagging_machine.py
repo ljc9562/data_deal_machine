@@ -7,7 +7,24 @@ import pandas as pd
 from IPython.display import display
 import plotly.offline as ply
 import re
+from os import listdir
+from shutil import copy
 
+
+def Wetagging_create(kind,name):
+    if '.txt' in name:
+        pass
+    else:
+        name = name + '.txt'
+    if name in listdir('./config/Tagcode_home'):
+        print('该标签文件已存在,请重新命名')
+    else:
+        if kind == 're':
+            copy('./config/template/template_re.txt',f'./config/Tagcode_home/{name}')
+            print(f're配置文件:{name}.txt 创建成功')
+        elif kind == 'script':
+            copy('./config/template/template_script.txt', f'./config/Tagcode_home/{name}')
+            print(f'script配置文件:{name}.txt 创建成功')
 
 class Tagcode_deal:
     '''
@@ -38,6 +55,8 @@ class Tagcode_deal:
             return f"{self.file_dir}/{self.file_name}",category  #如果文件类型是script不处理,只返回地址
 
 
+
+
 class Wetagging:
     def __init__(self,frame,file,debug = False,col = None):
         '''
@@ -55,6 +74,7 @@ class Wetagging:
             self.script_dir,self.category = Tagcode_deal(file).submit_file()
         self.debug = debug
         self.col = col
+
 
     def re_hitting_tag(self,frame):
         '''

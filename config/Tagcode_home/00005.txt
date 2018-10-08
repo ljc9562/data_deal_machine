@@ -1,0 +1,26 @@
+#category:re
+#author:->your name
+#cn_name:column's chinese name
+#markdowm:备注
+#版本:2018冬-20181001
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号 1.和["&"]  2.且["|"]  3.非["~"]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = 'columnsname'
+columns_type = 'str'
+
+#format
+#what->(frame['needcolumnsname']==XX)
+
+rule = \
+[
+#XX包含XX
+"what->(frame['needcolumnsname'].str.contains(''))",
+
+#XX普通条件XX
+"what->(frame['needcolumnsname']>=XX)"
+]
+
+else_value = "what"

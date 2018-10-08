@@ -1,0 +1,29 @@
+#category:script
+#author:who
+#cn_name:""
+#markdowm:作用
+#辅助:
+
+new_column_name = 'what'
+get_columns = ['what','what','what','what','what','what','what']
+
+###########################数据源输入变量名 frame#######################
+#############################your script#################################
+#ex
+def aa(data):
+	city = data[0]
+	citycode = data[1]
+	if '河源' in city or '珠海' in city:
+		return '地区'
+	elif citycode >700:
+		return '大于700'
+	else:
+		return '未知'
+
+#################################End########################################
+#输出的变量需要命名为 frame
+
+#ex
+frame[new_column_name] = frame[get_columns].apply(aa,axis = 1)
+
+

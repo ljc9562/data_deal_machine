@@ -1,13 +1,14 @@
 #category:re
 #author:jc
 #cn_name:
-#markdowm:作用
-#版本:2018冬-20181001
+#markdowm:用于判断展会类型 先用判定来判断:深度>二遍>一遍 的判定   再用
+#版本:2018冬-20181008
 #辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
-#逻辑符号 1.和["&"]  2.且["|"]  3.非["~"] 
+#逻辑符号 1.和["&"]  2.且["|"]  3.非["~"]
 #若输出是按列操作 需要加入frame[...]
+#re表达式格式: ""
 
-new_column_name = '区域'
+new_column_name = '展会类型_tag'
 columns_type = 'str'
 
 
@@ -22,4 +23,3 @@ rule = \
 ]
 
 else_value = "未知"
-
