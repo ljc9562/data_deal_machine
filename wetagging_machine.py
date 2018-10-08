@@ -91,23 +91,26 @@ class Wetagging:
         return frame,info_record,index_record,used_deal_columns,self.new_columns
 
     def script_hitting_tag(self):
+        '''
+        脚本标签提交执行
+        :return: frame：返回结果Dataframe  new_column_name:返回标签列名  get_columns:返回用到的列名,用于debug
+        '''
         frame = self.frame
         # print(self.script_dir)
         info = open(self.script_dir, encoding='utf-8').read().split("\n")
         # print(info)
         info_get = [i for i in info if ('new_column_name' in i or 'get_columns' in i) and ('frame' not in i)]  #获取new_column和get_columns的信息
-        #获取新建的列名
-        new_column_name = info_get[0].split('=',1)[1].replace(" ","")
-        #获取需要处理的列用于debug
-        get_columns = eval(info_get[1].split('=',1)[1])
-        # script 标签脚本提交
-        exec(open(self.script_dir, encoding='UTF-8').read())  # 提交执行script
+        new_column_name = info_get[0].split('=',1)[1].replace(" ","") #获取新建的列名
+        get_columns = eval(info_get[1].split('=',1)[1])#获取需要处理的列用于debug
+        exec(open(self.script_dir, encoding='UTF-8').read())  # 标签脚本提交,提交执行script
         return frame,new_column_name,get_columns
 
 
     def summary(self):
         '''
         总控制文件,先判断re还是script文件之后,执行对应提交标签函数
+        - 如果debug为False 直接返回打好标签的 dataframe
+        - 否则进行debug调试
         :return:返回打好标签之后的Dataframe
         '''
 
@@ -128,7 +131,16 @@ class Wetagging:
                 return debug_summary
 
     def re_debug_deal(self, frame,used_deal_columns,info_record,new_column_name):
-        print(new_column_name,self.col)
+        '''
+        re配置文件的debug控制函数
+        - 判断是否自定义debug列 如果不是默认按照rule里面需要的列进行debug
+        - 确定了输出列的需要列之后,自动进行规则统计和sankey简略图展示
+        :param frame: 打好标签的dataframe
+        :param used_deal_columns: 用到处理的列的列名
+        :param info_record: 规则统计的结果
+        :param new_column_name: 新打标签的列名
+        :return:返回规则统计结果框和sankey图
+        '''
         _frame = frame
         _info_record = info_record
         _new_column_name = new_column_name
@@ -146,6 +158,13 @@ class Wetagging:
 
 
     def script_debug_deal(self,frame,new_column_name,need_columns):
+        '''
+
+        :param frame:
+        :param new_column_name:
+        :param need_columns:
+        :return:
+        '''
         _frame = frame
         _new_column_name = new_column_name.replace("'","")
         if self.col == None:
@@ -164,6 +183,10 @@ class Sankey_deals:
 
 
     def sankey_format_deal(self):
+        '''
+        sankey配置文件的预处理,返回sankey图标题名,标签中文名列表,颜色列表,source值和target值,以及权重value
+        :return:layout_name,lable,color,source,target,value
+        '''
         columns_name = self.frame.columns.tolist()
         layout_name = " - ".join(columns_name)
         self.frame[columns_name[0]] = self.frame[columns_name[0]].fillna(f'{columns_name[0]}_空白')  #填充空值
@@ -203,11 +226,15 @@ class Sankey_deals:
 
 
 class Sankey_plot:
+
     def __init__(self,frame):
         self.title,self.lable,self.color,self.source,self.target,self.value = Sankey_deals(frame).sankey_format_deal()
 
-
     def format(self):
+        '''
+        sankey图格式配置
+        :return:返回格式化的fig变量
+        '''
         data = dict(
             type='sankey',
             node=dict(
@@ -235,12 +262,16 @@ class Sankey_plot:
         return fig
 
     def run(self):
+        '''
+        主控制函数
+        :return: 返回sankey图
+        '''
         fig = self.format()
         ply.init_notebook_mode(connected=True)
         ply.iplot(fig, validate=False)
 
 
-if __name__ == '__main__':
-    pp = pd.read_excel(r"C:\Users\85442\Desktop\省市區整理.xlsx",sheetname='Sheet1',keep_default_na = True)
-    for i in ['00002.txt']:
-         aa = Wetagging(pp,i,debug=True,col=['name']).summary()
+# if __name__ == '__main__':
+#     pp = pd.read_excel(r"C:\Users\85442\Desktop\省市區整理.xlsx",sheetname='Sheet1',keep_default_na = True)
+#     for i in ['00002.txt']:
+#          aa = Wetagging(pp,i,debug=True,col=['name']).summary()
