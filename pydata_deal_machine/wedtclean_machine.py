@@ -68,8 +68,8 @@ class Date_clean:
 
 
 class Date_deal:
-    def __init__(self,frame,name,key):
-        self.aim_date = '2018/9/9'.split('/')    #input('输入计算差值的目标日期：（格式yyyy/m/d）').split('/')  计算的时间节点
+    def __init__(self,frame,name,key,aim_date):
+        self.aim_date = aim_date.split('/')    #input('输入计算差值的目标日期：（格式yyyy/m/d）').split('/')  计算的时间节点
         self.diff_model = '2'   #input('选择1 输出日期差值  选择2  输出月份差值 选择3 输出年份差值')
         self.date_data = Date_clean(frame=frame,name=name,key=key).main()
 
@@ -102,11 +102,11 @@ class Date_deal:
         except:pass
 
     def summary(self):
-        print(self.date_data[['日期格式化']])
+        # print(self.date_data[['日期格式化']])
         self.date_data['相差数'] = self.date_data[['日期格式化']].apply(self.date_diff,axis = 1)
         return self.date_data
 
 if __name__ == '__main__':
     data = pd.read_excel(r"F:\ljc_file\每日工作\20180927 处理异常\日期测试.xlsx",sheetname=0)
     date_summary = Date_deal(frame=data,name='婚礼日期',key='key').summary()
-    date2.to_excel(r"F:\ljc_file\每日工作\20180927 处理异常\日期测试test.xlsx",index = False)
+    # date2.to_excel(r"F:\ljc_file\每日工作\20180927 处理异常\日期测试test.xlsx",index = False)

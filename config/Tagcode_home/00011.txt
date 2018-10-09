@@ -1,14 +1,14 @@
 #category:re
-#author:->your name
-#cn_name:column's chinese name
-#markdowm:备注
-#版本:2018冬-20181001
+#author:->your_name
+#cn_name:婚期情况
+#markdowm:用于标记婚礼日期情况 确定婚期远近
+#版本:2018冬-20181009
 #辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
-#逻辑符号 1.和["&"]  2.且["|"]  3.非["~"]
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
 #若输出是按列操作 需要加入frame[...]
 
 
-new_column_name = 'columnsname'
+new_column_name = '婚期情况_tag'
 columns_type = 'str'
 
 #format

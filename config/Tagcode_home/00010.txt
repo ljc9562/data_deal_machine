@@ -1,0 +1,29 @@
+#category:re
+#author:->jc
+#cn_name:信息完整度
+#markdowm:信息完整度  判断索票的信息完整情况 如第一步/第二部/完整等
+#版本:2018冬-20181009
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = '信息完整度_tag'
+columns_type = 'str'
+
+#format
+#what->(frame['needcolumnsname']==XX)
+
+rule = \
+[
+#完整索票
+"完整->(frame['本届索票信息'].str.contains('完整索票'))",
+"完整->(frame['本届索票信息'].str.contains('补全'))",
+"2步->(frame['本届索票信息'].str.contains('第二步'))",
+"1步->(frame['本届索票信息'].str.contains('第一步'))",
+"2步->(frame['本届索票信息'].str.contains('第2步'))",
+"1步->(frame['本届索票信息'].str.contains('第1步'))",
+"1步->(frame['本届索票信息'].str.contains('-未完成'))",
+]
+
+else_value = "null"
