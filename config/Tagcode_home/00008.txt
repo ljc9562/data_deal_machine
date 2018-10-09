@@ -1,6 +1,6 @@
 #category:re
-#author:->your_name
-#cn_name:columns_chinese_name
+#author:->jc
+#cn_name:展会类型
 #markdowm:备注
 #版本:2018冬-20181001
 #辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
@@ -8,19 +8,94 @@
 #若输出是按列操作 需要加入frame[...]
 
 
-new_column_name = 'columnsname'
+new_column_name = '展会类型_tag'
 columns_type = 'str'
 
 #format
-#what->(frame['needcolumnsname']==XX)
+#what->(frame['二次电话判定']==XX)
 
 rule = \
 [
-#XX包含XX
-"what->(frame['needcolumnsname'].str.contains(''))",
+#珠宝展标签
+"珠宝展->(frame['二次电话判定'].str.contains('^珠宝展',regex = True))",
+"珠宝展->(frame['一次电话判定'].str.contains('^珠宝展',regex = True))",
 
-#XX普通条件XX
-"what->(frame['needcolumnsname']>=XX)"
+#深度判断婚博会
+"婚博会-外地->(frame['深度营销电话内容'].str.contains('^婚博会',regex = True)) &(frame['深度营销电话判定']== '外地地址')",
+"婚博会-蜜蜂->(frame['深度营销电话内容'].str.contains('^婚博会',regex = True)) &(frame['深度营销电话判定']== '小蜜蜂专业')",
+"婚博会->(frame['深度营销电话内容'].str.contains('^婚博会',regex = True)) &(frame['深度营销电话判定']== '快递前确认地址')",
+"婚博会->(frame['深度营销电话判定'].str.contains('^婚博会',regex = True))",
+
+#二遍判断婚博会
+"婚博会-外地->(frame['二次电话内容'].str.contains('^婚博会',regex = True)) &(frame['二次电话判定']== '外地地址')",
+"婚博会-蜜蜂->(frame['二次电话内容'].str.contains('^婚博会',regex = True)) &(frame['二次电话判定']== '小蜜蜂专业')",
+"婚博会->(frame['二次电话内容'].str.contains('^婚博会',regex = True)) &(frame['二次电话判定']== '快递前确认地址')",
+"婚博会->(frame['二次电话判定'].str.contains('^婚博会',regex = True))",
+
+
+#一遍判断婚博会
+"婚博会-外地->(frame['一次电话内容'].str.contains('^婚博会',regex = True)) &(frame['一次电话判定']== '外地地址')",
+"婚博会-蜜蜂->(frame['一次电话内容'].str.contains('^婚博会',regex = True)) &(frame['一次电话判定']== '小蜜蜂专业')",
+"婚博会->(frame['一次电话内容'].str.contains('^婚博会',regex = True)) &(frame['一次电话判定']== '快递前确认地址')",
+"婚博会->(frame['一次电话判定'].str.contains('^婚博会',regex = True))",
+
+
+#深度判断家博会
+"家博会-外地->(frame['深度营销电话内容'].str.contains('^家博会',regex = True)) &(frame['深度营销电话判定']== '外地地址')",
+"家博会-蜜蜂->(frame['深度营销电话内容'].str.contains('^家博会',regex = True)) &(frame['深度营销电话判定']== '小蜜蜂专业')",
+"家博会->(frame['深度营销电话内容'].str.contains('^家博会',regex = True)) &(frame['深度营销电话判定']== '快递前确认地址')",
+"家博会->(frame['深度营销电话判定'].str.contains('^家博会',regex = True))",
+
+#二遍判断家博会
+"家博会-外地->(frame['二次电话内容'].str.contains('^家博会',regex = True)) &(frame['二次电话判定']== '外地地址')",
+"家博会-蜜蜂->(frame['二次电话内容'].str.contains('^家博会',regex = True)) &(frame['二次电话判定']== '小蜜蜂专业')",
+"家博会->(frame['二次电话内容'].str.contains('^家博会',regex = True)) &(frame['二次电话判定']== '快递前确认地址')",
+"家博会->(frame['二次电话判定'].str.contains('^家博会',regex = True))",
+
+
+#一遍判断家博会
+"家博会-外地->(frame['一次电话内容'].str.contains('^家博会',regex = True)) &(frame['一次电话判定']== '外地地址')",
+"家博会-蜜蜂->(frame['一次电话内容'].str.contains('^家博会',regex = True)) &(frame['一次电话判定']== '小蜜蜂专业')",
+"家博会->(frame['一次电话内容'].str.contains('^家博会',regex = True)) &(frame['一次电话判定']== '快递前确认地址')",
+"家博会->(frame['一次电话判定'].str.contains('^家博会',regex = True))",
+
+#深度判断儿博会
+"儿博会-外地->(frame['深度营销电话内容'].str.contains('^儿博会',regex = True)) &(frame['深度营销电话判定']== '外地地址')",
+"儿博会-蜜蜂->(frame['深度营销电话内容'].str.contains('^儿博会',regex = True)) &(frame['深度营销电话判定']== '小蜜蜂专业')",
+"儿博会->(frame['深度营销电话内容'].str.contains('^儿博会',regex = True)) &(frame['深度营销电话判定']== '快递前确认地址')",
+"儿博会->(frame['深度营销电话判定'].str.contains('^儿博会',regex = True))",
+
+#二遍判断儿博会
+"儿博会-外地->(frame['二次电话内容'].str.contains('^儿博会',regex = True)) &(frame['二次电话判定']== '外地地址')",
+"儿博会-蜜蜂->(frame['二次电话内容'].str.contains('^儿博会',regex = True)) &(frame['二次电话判定']== '小蜜蜂专业')",
+"儿博会->(frame['二次电话内容'].str.contains('^儿博会',regex = True)) &(frame['二次电话判定']== '快递前确认地址')",
+"儿博会->(frame['二次电话判定'].str.contains('^儿博会',regex = True))",
+
+#一遍判断儿博会
+"儿博会-外地->(frame['一次电话内容'].str.contains('^儿博会',regex = True)) &(frame['一次电话判定']== '外地地址')",
+"儿博会-蜜蜂->(frame['一次电话内容'].str.contains('^儿博会',regex = True)) &(frame['一次电话判定']== '小蜜蜂专业')",
+"儿博会->(frame['一次电话内容'].str.contains('^儿博会',regex = True)) &(frame['一次电话判定']== '快递前确认地址')",
+"儿博会->(frame['一次电话判定'].str.contains('^儿博会',regex = True))",
+
+#深度电话内容判断
+"珠宝展->(frame['深度营销电话内容'].str.contains('^珠宝展',regex = True))",
+"婚博会->(frame['深度营销电话内容'].str.contains('^婚博会',regex = True))",
+"家博会->(frame['深度营销电话内容'].str.contains('^家博会',regex = True))",
+"儿博会->(frame['深度营销电话内容'].str.contains('^儿博会',regex = True))",
+
+#一次二次电话内容判断
+"珠宝展->(frame['二次电话内容'].str.contains('珠宝展'))",
+"珠宝展->(frame['一次电话内容'].str.contains('珠宝展'))",
+
+"婚博会->(frame['二次电话内容'].str.contains('婚博会'))",
+"家博会->(frame['二次电话内容'].str.contains('家博会'))",
+"儿博会->(frame['二次电话内容'].str.contains('儿博会'))",
+
+"婚博会->(frame['一次电话内容'].str.contains('婚博会'))",
+"家博会->(frame['一次电话内容'].str.contains('家博会'))",
+"儿博会->(frame['一次电话内容'].str.contains('儿博会'))",
+
 ]
 
-else_value = "what"
+else_value = ""
+
