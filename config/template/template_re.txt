@@ -1,5 +1,5 @@
 #category:re
-#author:->your_name
+#author:your_name
 #cn_name:columns_chinese_name
 #markdowm:备注
 #版本:2018冬-20181001
