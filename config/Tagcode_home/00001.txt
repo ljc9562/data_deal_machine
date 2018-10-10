@@ -2,6 +2,7 @@
 #author:jc
 #cn_name:""
 #markdowm:作用
+#版本:2018冬-20181001
 #辅助:
 
 new_column_name = '地区情况'

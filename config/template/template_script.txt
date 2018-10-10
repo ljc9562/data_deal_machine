@@ -1,7 +1,8 @@
 #category:script
 #author:who
-#cn_name:""
+#cn_name:what
 #markdowm:作用
+#版本:2018冬-20181001
 #辅助:
 
 new_column_name = 'what'
