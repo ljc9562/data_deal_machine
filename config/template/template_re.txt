@@ -1,7 +1,7 @@
 #category:re
 #author:your_name
 #cn_name:columns_chinese_name
-#markdowm:备注
+#markdowm:写下备注
 #版本:2018冬-20181001
 #辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
 #逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
