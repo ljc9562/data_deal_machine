@@ -1,0 +1,26 @@
+#category:re
+#author:jc
+#cn_name:上届订单情况
+#markdowm:判断上届订单和上届升级(需要手动更新)  本届 18冬 470  上届18秋 469
+#版本:2018冬-20181011
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = '上届订单情况_tag'
+columns_type = 'str'
+
+#format
+#what->(frame['needcolumnsname']==XX)
+
+rule = \
+[
+#XX包含XX
+"上届升级->(frame['签单'].str.contains('469'))&(frame['身份等级'].str.contains('vip'))" , 
+"上届订单->(frame['签单'].str.contains('469'))&(~frame['签单'].str.contains('+'))&(frame['身份等级'].str.contains('金卡'))" 
+"上届订单->(frame['签单'].str.contains('469'))&(frame['身份等级'].str.contains('金卡'))" 
+]
+
+else_value = ""
+

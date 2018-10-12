@@ -9,9 +9,9 @@ from sqlalchemy import create_engine
 
 class tagfile_documnent:
     def __init__(self):
-        self.dir = r'C:/Users/Administrator/PycharmProjects/untitled1/data_deal_machine'
+        self.dir = r'Z:/automation/data_deal_machine'
         os.chdir(self.dir)
-        self.file_list = os.listdir(".\config\Tagcode_home")
+        self.file_list = os.listdir("./config/Tagcode_home")
 
 
     def file_deal(self,file_name):
