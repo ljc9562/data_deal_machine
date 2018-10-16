@@ -1,0 +1,24 @@
+#category:re
+#author:jc
+#cn_name:历史到场情况
+#markdowm:历史到场情况  包含+号的部分 多次到场  空值的部分 从未到场 标记: 从未到场 多次到场
+#版本:2018冬-20181016
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = '历史到场情况_tag'
+columns_type = 'str'
+
+#format
+#what->(frame['needcolumnsname']==XX)
+
+rule = \
+[
+#XX包含XX
+"多次到场->(frame['到场'].str.contains('\+'))",
+"从未到场->(frame['到场']=='')"
+]
+
+else_value = ""

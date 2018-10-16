@@ -1,0 +1,22 @@
+#category:re
+#author:jc
+#cn_name:季节有效
+#markdowm:判断季节有效(如秋季有效冬季有效...)
+#版本:2018冬-20181016
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = '季节有效_tag'
+columns_type = 'str'
+
+#format
+#what->(frame['needcolumnsname']==XX)
+
+rule = \
+[
+"冬季有效->(frame['一次电话内容'].str.contains('季有效'))"
+]
+
+else_value = ""

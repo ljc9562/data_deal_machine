@@ -1,0 +1,23 @@
+#category:re
+#author:jc
+#cn_name:上届到场情况
+#markdowm:根据到场列判断到场情况 到场 包含 上届编号 *需届数修改*
+#版本:2018冬-20181016
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = '上届到场情况_tag'
+columns_type = 'str'
+
+#format
+#what->(frame['needcolumnsname']==XX)
+
+rule = \
+[
+#到场 包含 上届编号
+"上届到场->(frame['到场'].str.contains('402'))"
+]
+
+else_value = "上届未到场"

@@ -1,0 +1,31 @@
+#category:re
+#author:jc
+#cn_name:索票情况
+#markdowm:标记:回归,新会员,回访,珠宝展索票,喜宴展索票,摄影展索票,旅游展索票,回归-珠宝展,回归-旅游展
+#版本:2018冬-20181016
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = '索票情况_tag'
+columns_type = 'str'
+
+#format
+#what->(frame['needcolumnsname']==XX)
+
+rule = \
+[
+"珠宝展索票->(frame['一次电话内容'].str.contains('珠宝展索票'))",
+"喜宴展索票->(frame['一次电话内容'].str.contains('喜宴展索票'))",
+"摄影展索票->(frame['一次电话内容'].str.contains('摄影展索票'))",
+"旅游展索票->(frame['一次电话内容'].str.contains('旅游展索票'))",
+"回归-珠宝展->(frame['一次电话内容'].str.contains('回归-珠宝'))",
+"回归-旅游展->(frame['一次电话内容'].str.contains('回归-旅游'))",
+"回归->(frame['一次电话内容'].str.contains('回归'))&(~frame['一次电话内容'].str.contains('（回归）'))",
+"新会员->(frame['一次电话内容'].str.contains('索票|简易'))&(~frame['一次电话内容'].str.contains('老会员|VIP|金卡|vip'))",
+
+
+]
+
+else_value = "回访"

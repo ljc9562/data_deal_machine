@@ -1,0 +1,22 @@
+#category:re
+#author:jc
+#cn_name:地址空白
+#markdowm:判断地址空白,直接从一次电话内容匹配包含地址空白的
+#版本:2018冬-20181016
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = '地址空白_tag'
+columns_type = 'str'
+
+#format
+#what->(frame['一次电话内容']==XX)
+
+rule = \
+[
+"地址空白->(frame['一次电话内容'].str.contains('地址空白'))"
+]
+
+else_value = ""
