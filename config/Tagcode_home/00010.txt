@@ -1,5 +1,5 @@
 #category:re
-#author:->jc
+#author:jc
 #cn_name:信息完整度
 #markdowm:信息完整度  判断索票的信息完整情况 如第一步/第二部/完整等
 #版本:2018冬-20181009

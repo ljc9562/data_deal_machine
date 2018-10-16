@@ -1,5 +1,5 @@
 #category:re
-#author:->your_name
+#author:jc
 #cn_name:婚期情况
 #markdowm:用于标记婚礼日期情况 确定婚期远近
 #版本:2018冬-20181009

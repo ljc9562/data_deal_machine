@@ -1,5 +1,5 @@
 #category:re
-#author:->jc
+#author:jc
 #cn_name:一次电话有效
 #markdowm:有效 包含 - 或 快递前确认地址  和  判定不包含无效
 #版本:2018冬-20181001
