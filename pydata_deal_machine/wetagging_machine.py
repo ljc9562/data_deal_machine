@@ -160,7 +160,7 @@ class Wetagging:
                 debug_summary = self.re_debug_deal(_frame,_used_deal_columns,_info_record,_new_column_name)
                 return debug_summary
 
-    def re_debug_deal(self, frame,used_deal_columns,info_record,new_column_name):
+    def re_debug_deal(self,frame,used_deal_columns,info_record,new_column_name):
         '''
         re配置文件的debug控制函数
         - 判断是否自定义debug列 如果不是默认按照rule里面需要的列进行debug
@@ -171,6 +171,7 @@ class Wetagging:
         :param new_column_name: 新打标签的列名
         :return:返回规则统计结果框和sankey图
         '''
+
         _frame = frame
         _info_record = info_record
         _new_column_name = new_column_name

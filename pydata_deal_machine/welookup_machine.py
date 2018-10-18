@@ -122,9 +122,11 @@ class welookup:
 
 
 if __name__ == '__main__':
-    Data_orginal_left = pd.read_excel(r"F:\ljc_file\每日工作\20180925异常处理 类型对比表\电话类型统计_一遍_2018夏_20180627.xlsx",sheetname=0,converters={'婚博会id':str},keep_default_na = False)
-    Data_orginal_right = pd.read_excel(r"F:\ljc_file\每日工作\20180925异常处理 类型对比表\20180926展中数据.xlsx",sheetname=0,converters={'婚博会id':str},keep_default_na = False)
-    run = welookup(aim_soure=Data_orginal_left,match_soure=Data_orginal_right,aim_columns_name='婚博会id',match_columns_name='婚博会id',needed_columns='展中联系$展中未联系$展中情况',lable='展中').summary()
-    print(run)
+    aim = pd.read_excel(r"F:\ljc_file\每日工作\20181017 地区统计\20181017家装索票地区数据统计_工作记录.xlsx",
+                        converters={'索票人手机号': str, '爱人手机号': str})
+    match = pd.read_hdf(r"F:\ljc_file\data_manage\h5\20180909finally_tab.h5")
+    aim = welookup(aim_soure=aim, match_soure=match, aim_columns_name="索票人手机号$爱人手机号", match_columns_name='新郎手机$新娘手机',
+                   needed_columns='婚博会id$所属省$所属市$所属区$详细地址', lable='终表').summary()
+    print(aim)
     # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
     #                match_info=sys.argv)
