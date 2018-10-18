@@ -24,6 +24,7 @@ rule = \
 "回归-旅游展->(frame['一次电话内容'].str.contains('回归-旅游'))",
 "回归->(frame['一次电话内容'].str.contains('回归'))&(~frame['一次电话内容'].str.contains('（回归）'))",
 "新会员->(frame['一次电话内容'].str.contains('索票|简易'))&(~frame['一次电话内容'].str.contains('老会员|VIP|金卡|vip'))",
+"回归->(frame['本届索票信息']!='')&(frame['一次电话内容'].str.contains('展会索票'))",
 
 
 ]

@@ -1,14 +1,14 @@
 #category:re
 #author:jc
-#cn_name:连续2届未到场
-#markdowm:连续2届未到场  到场不包含 上届编号+上上届编号
-#版本:2018冬-20181016
+#cn_name:信息完整度2
+#markdowm:信息完整度2用于拆分信息完整度中被合并到一步未完整中 仅仅 是未完成的索票  标记:未完成
+#版本:2018冬-20181017
 #辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
 #逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
 #若输出是按列操作 需要加入frame[...]
 
 
-new_column_name = '连续2届未到场_tag'
+new_column_name = '信息完整度2_tag'
 columns_type = 'str'
 
 #format
@@ -16,8 +16,7 @@ columns_type = 'str'
 
 rule = \
 [
-#XX包含XX
-"连续2届未到场->(~frame['到场'].str.contains('402'))&(~frame['到场'].str.contains('401'))"
+"未完成->(frame['本届索票信息'].str.contains('-未完成'))&(frame['一次电话内容'].str.contains('^家博会',regex = True))"
 ]
 
 else_value = ""

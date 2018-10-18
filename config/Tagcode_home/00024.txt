@@ -1,0 +1,24 @@
+#category:re
+#author:jc
+#cn_name:展会区分
+#markdowm: *手动更新提醒* 根据一次电话内容,区分展会:家博会,婚博会,儿博会,和展会类型规则有别
+#版本:2018冬-20181017
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = '展会区分_tag'
+columns_type = 'str'
+
+#format
+#what->(frame['needcolumnsname']==XX)
+
+rule = \
+[
+"婚博会->(frame['一次电话内容'].str.contains('^婚博会',regex = True))",
+"家博会->(frame['一次电话内容'].str.contains('^家博会',regex = True))",
+"儿博会->(frame['一次电话内容'].str.contains('^儿博会',regex = True))"
+]
+
+else_value = ""
