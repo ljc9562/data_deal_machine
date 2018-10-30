@@ -99,9 +99,10 @@ class Wetagging:
         used_deal_columns = []  #获取rule里面所需要的列
         for _rule in self.tag_rule:
             tag_index = frame[eval(_rule[1])].index.tolist()
-            index_record += [(_rule[0], tag_index , list(set(tag_index).difference(index_already_exist)))]
-            used_deal_columns += [value for value in re.findall("\['(.*?)\']",_rule[1])] ##获取rule里面['****']的列名
             tag_index = list(set(tag_index).difference(index_already_exist))
+            index_record += [(_rule[0], tag_index , tag_index)]
+            used_deal_columns += [value for value in re.findall("\['(.*?)\']",_rule[1])] ##获取rule里面['****']的列名
+
             if 'frame' in _rule[0]:
                 frame.loc[tag_index,self.new_columns] = eval(_rule[0])
             else:
@@ -297,9 +298,12 @@ class Sankey_plot:
         主控制函数
         :return: 返回sankey图
         '''
-        fig = self.format()
-        ply.init_notebook_mode(connected=True)
-        ply.iplot(fig, validate=False)
+        if len(self.lable)<=50:
+            fig = self.format()
+            ply.init_notebook_mode(connected=True)
+            ply.iplot(fig, validate=False)
+        else:
+            print('类型过多,不输出sankey图')
 
 
 # if __name__ == '__main__':
