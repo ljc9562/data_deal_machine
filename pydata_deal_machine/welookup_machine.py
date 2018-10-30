@@ -11,7 +11,7 @@ import pandas as pd
 import sys
 
 class Both_collect:
-    def __init__(self,datasoure_left,datasoure_right,aim_columns_name,match_columns_name,needed_columns,lable,combine = True):
+    def __init__(self,datasoure_left,datasoure_right,aim_columns_name,match_columns_name,needed_columns,lable,keep,combine = True):
         self.aim_columns_name = aim_columns_name.split("$")
         self.match_columns_name = match_columns_name.split("$")
         self.needed_columns = needed_columns.split("$")
@@ -23,6 +23,7 @@ class Both_collect:
         self.Data_orginal_right = self.Data_orginal_right.loc[:,_need_columns]
         self.combine = combine
         self.lable = lable
+        self.keep = keep
 
     def matched_key_deal(self):
         _needed_columns_deal = self.needed_columns.copy()
@@ -44,6 +45,7 @@ class Both_collect:
                 Data_orginal_right_deal = pd.concat([Data_orginal_right_deal,Data_orginal_right_deal_more],axis=0,ignore_index=True)
         Data_orginal_right_deal = Data_orginal_right_deal.loc[:,:]
         Data_orginal_right_deal['key'] = Data_orginal_right_deal['key'].str.strip()
+        Data_orginal_right_deal = Data_orginal_right_deal.drop_duplicates('key',keep=self.keep)
         try:
             Data_orginal_right_deal = Data_orginal_right_deal[Data_orginal_right_deal.key != ""]
         except:
@@ -88,7 +90,7 @@ class Both_collect:
 
 
 class welookup:
-    def __init__(self, aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns,lable,combine = True):
+    def __init__(self, aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns,lable,keep = "first",combine = True):
         '''
         -----------------------------------------------------------------------------------------------------------------
         :param aim_soure: 目标数据源（匹配合并数据）
@@ -102,7 +104,7 @@ class welookup:
         '''
         self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns = aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns
         self.lable,self.combine = lable,combine
-
+        self.keep = keep
 
     def summary(self):
         '''
@@ -117,7 +119,7 @@ class welookup:
         :return: combine_dataframe 是一个数据结构是pandas的Dataframe（合并后的结果）
         -----------------------------------------------------------------------------------------------------------------
         '''
-        combine_dataframe = Both_collect(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns,self.lable,self.combine).aim_match()
+        combine_dataframe = Both_collect(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns,self.lable,self.keep,self.combine).aim_match()
         return combine_dataframe
 
 
