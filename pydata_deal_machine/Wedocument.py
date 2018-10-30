@@ -35,13 +35,14 @@ class tagfile_documnent:
         used_deal_columns += [value for value in re.findall("\['(.*?)\']", str(_rule))]
         used_deal_columns = (list(set(used_deal_columns)))
         used_deal_columns = "/".join(used_deal_columns)
+        output_value = "/".join(list(set([rules.split("->", 1)[0] for rules in _rule])))
         author = re.findall("#author:(.*?)\n", data)[0]
         describe = re.findall("#markdowm:(.*?)\n", data)[0]
         version = re.findall("#版本:(.*?)\n", data)[0]
         cn_name = re.findall("#cn_name:(.*?)\n", data)[0]
         newcolname = base_info[0]
         newcolname_type = base_info[1]
-        info = {'字段代号':filename,'字段作者':author,'字段名':newcolname,'字段中文名':cn_name,'字段类型':newcolname_type,'字段版本':version,'所需字段':used_deal_columns,'字段描述':describe,'字段路径':f'file:///{self.dir}/config/Tagcode_home/{filename}.txt'}
+        info = {'字段代号':filename,'字段作者':author,'字段名':newcolname,'字段中文名':cn_name,'字段类型':newcolname_type,'字段版本':version,'输出标记':output_value,'所需字段':used_deal_columns,'字段描述':describe,'字段路径':f'file:///{self.dir}/config/Tagcode_home/{filename}.txt'}
         return info
 
     def script_info(self, data, filename):
@@ -54,8 +55,8 @@ class tagfile_documnent:
         newcolname = info_get[0].split('=',1)[1].replace(" ","") #获取新建的列名
         used_deal_columns = eval(info_get[1].split('=',1)[1])#获取需要处理的列用于debug
         used_deal_columns = "/".join(used_deal_columns)
-        info = {'字段代号': filename, '字段作者': author, '字段名': newcolname, '字段中文名': cn_name, '字段类型': "未知",
-                '字段版本': version,'所需字段':used_deal_columns, '字段描述': describe,
+        info = {'字段代号': filename, '字段作者': author, '字段名': newcolname, '字段中文名': cn_name, '字段类型': "---",
+                '字段版本': version,'输出标记':'---','所需字段':used_deal_columns, '字段描述': describe,
                 '字段路径': f'file:///{self.dir}/config/Tagcode_home/{filename}.txt'}
         return info
 
@@ -82,7 +83,7 @@ class tagfile_documnent:
             return new.name.tolist()
 
     def to_excel(self):
-        _frame = pd.DataFrame(columns=['字段代号','字段作者','字段名','字段中文名','字段类型','字段版本','所需字段','字段描述','字段路径'])
+        _frame = pd.DataFrame(columns=['字段代号','字段作者','字段名','字段中文名','字段类型','字段版本','输出标记','所需字段','字段描述','字段路径'])
         for name in self.file_list:  #self.file_list
             name = name.split(".")[0]
             results = self.file_deal(name)
@@ -117,7 +118,7 @@ class tagfile_documnent:
         if len(_list) == 0:
             print('更新跳过')
         else:
-            _frame = pd.DataFrame(columns=['字段代号','字段作者','字段名','字段中文名','字段类型','字段版本','所需字段','字段描述','字段路径'])
+            _frame = pd.DataFrame(columns=['字段代号','字段作者','字段名','字段中文名','字段类型','字段版本','输出标记','所需字段','字段描述','字段路径'])
             for name in _list:  #self.file_list
                 name = name.split(".")[0]
                 try:
@@ -126,7 +127,7 @@ class tagfile_documnent:
                 results = self.file_deal(name)
                 _frame = _frame.append(results,ignore_index=True)
 
-            connect = create_engine('mysql+pymysql://root:!QAZ2wsx@localhost:3306/data_center_gzsj?charset=utf8')
+            connect = create_engine('mysql+pymysql://root:*****@localhost:3306/data_center_gzsj?charset=utf8')
             pd.io.sql.to_sql(_frame,'doc_tagfile_info', connect, schema='data_center_gzsj', if_exists='append',index = False)
             print('输出成功')
 
