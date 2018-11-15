@@ -18,6 +18,8 @@ rule = \
 [
 #XX包含XX
 "简易索票->(frame['本届索票信息'].str.contains('完整|补全'))",
+"2步未完成->(frame['本届索票信息'].str.contains('2步没完成'))",
+"1步未完成->(frame['本届索票信息'].str.contains('1步没完成'))",
 "2步未完成->(frame['本届索票信息'].str.contains('第二步'))",
 "1步未完成->(frame['本届索票信息'].str.contains('第一步'))",
 "1步未完成->(frame['本届索票信息'].str.contains('未完成'))"
