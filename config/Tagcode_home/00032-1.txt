@@ -1,0 +1,42 @@
+#category:script
+#author:who
+#cn_name:判定处理
+#markdowm:判定处理
+#版本:2018冬-20181020
+#辅助:
+
+new_column_name = '判定处理_二遍电话统计专用'
+get_columns = ['一次电话判定']
+
+###########################数据源输入变量名 frame#######################
+#############################your script#################################
+#打通/完成处理
+finish_index = frame[(frame['一次电话判定']!='未通')&(frame['一次电话判定']!='未打')&(frame['一次电话判定']!='')].index
+
+#通话处理
+
+tonghua_index = frame[(~frame['一次电话判定'].str.contains('未打|未通|三天未通|双空错号|外地地址|重复数据'))&(frame['一次电话判定']!='')].index
+		
+#婚博会有效
+hbh_effice = frame[(frame['一次电话判定'].str.contains('婚博会'))|((frame['一次电话判定']=='快递前确认地址'))].index
+
+# #家博会有效
+jbh_effice = frame[(frame['一次电话判定'].str.contains('家博会'))|((frame['一次电话判定']=='快递前确认地址')&(frame['一次电话内容'].str.contains('^家博会',regex = True)))].index
+
+# 一遍有效
+once_effice = frame[(frame['一次电话判定'].str.contains('^婚|^家|^儿|^珠',regex = True))|(frame['一次电话判定']=='快递前确认地址')].index
+
+
+frame.loc[finish_index,'打通']=1	
+frame.loc[tonghua_index,'通话']=1	
+frame.loc[hbh_effice,'婚博会有效']=1
+frame.loc[jbh_effice,'家博会有效']=1
+frame.loc[once_effice,'有效']=1
+	
+
+#################################End########################################
+#输出的变量需要命名为 frame
+
+
+
+
