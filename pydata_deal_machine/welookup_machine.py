@@ -56,10 +56,19 @@ class Both_collect:
 
     def combine_tool(self,data):
         self.data = data
+        # print(data)
+        result = ''
         for i in range(len(self.data)):
-            if self.data[i] != "":
-                return data[i]
-                break
+            if self.data[i] != '' :
+                result = self.data[i]
+
+        if str(result) != 'nan' or str(result) != 'None':
+            return result
+        else:
+            return  ""
+
+
+
 
     def aim_match(self):
         _Data_orginal_right_deal = self.matched_key_deal()
@@ -124,11 +133,16 @@ class welookup:
 
 
 if __name__ == '__main__':
-    aim = pd.read_excel(r"F:\ljc_file\每日工作\20181017 地区统计\20181017家装索票地区数据统计_工作记录.xlsx",
-                        converters={'索票人手机号': str, '爱人手机号': str})
-    match = pd.read_hdf(r"F:\ljc_file\data_manage\h5\20180909finally_tab.h5")
-    aim = welookup(aim_soure=aim, match_soure=match, aim_columns_name="索票人手机号$爱人手机号", match_columns_name='新郎手机$新娘手机',
+
+
+    # aim = pd.read_excel(r"F:\ljc_file\每日工作\20181017 地区统计\20181017家装索票地区数据统计_工作记录.xlsx",
+    #                     converters={'索票人手机号': str, '爱人手机号': str})
+    # match = pd.read_hdf(r"F:\ljc_file\data_manage\h5\20180909finally_tab.h5")
+
+
+    result = welookup(aim_soure=aim, match_soure=match, aim_columns_name="索票人手机号$爱人手机号", match_columns_name='新郎手机$新娘手机',
                    needed_columns='婚博会id$所属省$所属市$所属区$详细地址', lable='终表').summary()
     print(aim)
     # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
     #                match_info=sys.argv)
+

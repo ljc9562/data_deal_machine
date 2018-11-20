@@ -127,7 +127,7 @@ class tagfile_documnent:
                 results = self.file_deal(name)
                 _frame = _frame.append(results,ignore_index=True)
 
-            connect = create_engine('mysql+pymysql://root:*****@localhost:3306/data_center_gzsj?charset=utf8')
+            connect = create_engine('mysql+pymysql://root:!QAZ2wsx@localhost:3306/data_center_gzsj?charset=utf8')
             pd.io.sql.to_sql(_frame,'doc_tagfile_info', connect, schema='data_center_gzsj', if_exists='append',index = False)
             print('输出成功')
 

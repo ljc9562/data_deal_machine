@@ -17,8 +17,8 @@ columns_type = 'str'
 rule = \
 [
 #XX包含XX
-"上届订单->(frame['身份等级_上届'].str.contains('金卡'))&(frame['签单'].str.contains('402'))",
-"上届升级->(frame['签单'].str.contains('402'))"
+"上届订单->(frame['身份等级_上届'].str.contains('金卡'))&(frame['签单'].str.contains('374'))",
+"上届升级->(frame['签单'].str.contains('374'))"
 
 ]
 

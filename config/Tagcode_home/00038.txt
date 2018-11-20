@@ -13,7 +13,7 @@ get_columns = ['二次电话判定']
 #ex
 
 #通话
-call_index = frame[~frame['二次电话判定'].isin(['未打','未通','三天未通',""])].index
+call_index = frame[~frame['二次电话判定'].isin(['未打','未通','三天未通',"","喜宴组","婚庆组","双空错号"])].index
 frame.loc[call_index,'通话_二遍判定'] = 1
 
 #来

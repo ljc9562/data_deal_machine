@@ -31,8 +31,9 @@ class Importance_Statistic(object):
     
     def Preprocessing_Deal(self,Data_original):
         ##重点项重构##
-        #Data_original[u'重点看旅拍'],Data_original[u'重点看海外婚礼'] = 0,0
         Data_original[u'重点看旅拍'] = 0
+		
+		
 		
         Index_lvpai = Data_original[((Data_original[u'婚照需求'].str.contains(u'旅拍')) & (Data_original[u'重点看婚纱摄影'].astype(str) == '1')) |
                                     (Data_original[u'旅游需求'].str.contains(u'旅拍')) ].index
@@ -43,10 +44,6 @@ class Importance_Statistic(object):
         
         Index_weddingphoto = Data_original[Data_original[u'婚照需求'] == u'旅拍'].index
         Data_original.loc[Index_weddingphoto,u'重点看婚纱摄影'] = 0
-        
-        #Index_weddingabroad = Data_original[(Data_original[u'旅游需求'].str.contains(u'海外婚礼')) &\
-        #                                    (Data_original[u'重点看旅游'].astype(str) == '1')].index
-        #Data_original.loc[Index_weddingabroad,u'重点看海外婚礼'] = 1
     
         Index_lvadjust = Data_original[Data_original[u'重点看婚纱摄影'].astype(str) == '1'].index
         Data_original.loc[Index_lvadjust,u'重点看旅拍'] = 0

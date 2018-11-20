@@ -17,7 +17,7 @@ columns_type = 'str'
 rule = \
 [
 #XX包含XX
-"连续2届未到场->(~frame['到场'].str.contains('402'))&(~frame['到场'].str.contains('401'))"
+"连续2届未到场->(~frame['到场'].str.contains('374'))&(~frame['到场'].str.contains('322'))"
 ]
 
 else_value = ""

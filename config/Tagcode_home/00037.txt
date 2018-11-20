@@ -17,9 +17,9 @@ columns_type = 'str'
 rule = \
 [
 #XX包含XX
-"武汉->(frame['二遍电话负责人'].str.contains('武汉'))",
-"杭州->(frame['二遍电话负责人'].str.contains('杭州'))",
-"广州->(frame['二遍电话负责人']!='')"
+"武汉->(frame['二次电话负责人'].str.contains('武汉'))",
+"杭州->(frame['二次电话负责人'].str.contains('杭州'))",
+"广州->(frame['二次电话负责人']!='')"
 ]
 
 else_value = ""

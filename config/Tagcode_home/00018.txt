@@ -17,7 +17,7 @@ columns_type = 'str'
 rule = \
 [
 #到场 包含 上届编号
-"上届到场->(frame['到场'].str.contains('402'))"
+"上届到场->(frame['到场'].str.contains('374'))"
 ]
 
 else_value = "上届未到场"

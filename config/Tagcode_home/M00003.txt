@@ -17,7 +17,7 @@ columns_type = 'str'
 rule = \
 [
 #好友推荐
-"好友推荐->(frame['本届索票信息'].str.contains('老推新'))",
+"好友推荐->(frame['本届索票信息'].str.contains('老推新'))&(frame['身份等级']=='新会员')",
 
 #非新会员
 "frame['身份等级']->(frame['身份等级']!='新会员')",

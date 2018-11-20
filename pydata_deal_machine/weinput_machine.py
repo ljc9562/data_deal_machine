@@ -86,5 +86,6 @@ class weinput:
         return file_path_list
 
 if __name__ == '__main__':
-    we = weinput(dir=r"F:\ljc_file\数据管理\其他表\gg").file_and_sheet_combine()
-    we.to_csv(r"F:\ljc_file\数据管理\其他表\gg\2018-截止18秋的展会类型jg.xlsx",index = False)
+    we = weinput(dir=r"F:\temp\索票\29届数据导出\all").file_combine()
+    # we.to_csv(r"F:\ljc_file\数据管理\其他表\gg\2018-截止18秋的展会类型jg.xlsx",index = False)
+    we.to_excel(r"F:\temp\索票\29届数据导出\all\output.xlsx", index=False)

@@ -16,22 +16,21 @@ class time_different_deal:
         self.needed_deal_col = {
             '二遍电话活动统计':['摇一摇的时间_HUE','领券时间_HUE','安装时间_HUE','助力时间_HUE']
         }
-        # 默认 时间format '%Y-%m-%d %H:%M:%S'
+        # 默认 时间format '%Y-%m-%d'
         self.special_time_format = {}
         self.model = model
         
     def diff(self,col_key,col_reduce,aim_key_list,judge_rule):
         deal_col = self.needed_deal_col.get(col_key)
         for sub,value in enumerate(deal_col):
-            
             if self.special_time_format.get(value):
                 deal_col_format = self.special_time_format.get(value)
-            else:deal_col_format = '%Y-%m-%d %H:%M:%S'
+            else:deal_col_format = '%Y-%m-%d'
             if self.special_time_format.get(col_reduce):
                 reduce_col_format = self.special_time_format.get(col_reduce)
-            else:reduce_col_format =  '%Y-%m-%d %H:%M:%S'
+            else:reduce_col_format =  '%Y-%m-%d'
                 
-            diff = pd.to_datetime(self.frame[value],format=deal_col_format) - pd.to_datetime(self.frame[col_reduce],format=reduce_col_format)
+            diff = pd.to_datetime(self.frame[value].str.slice(0,10),format=deal_col_format) - pd.to_datetime(self.frame[col_reduce].str.slice(0,10),format=reduce_col_format)
             diff = diff.apply(lambda x:x.days)
             for rule in judge_rule:
                 self.frame.loc[diff[eval(judge_rule.get(rule))].index ,aim_key_list[sub]] = rule
