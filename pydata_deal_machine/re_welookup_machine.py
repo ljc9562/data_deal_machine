@@ -33,9 +33,22 @@ class Welookup:
 
     def right_data_deal(self):
         right_key,right_orginal = self.right_data_extract()
-        for sub,value in enumerate(right_key):
 
+        right_need_columns = right_orginal.columns.tolist()
+        for key in right_key:
+            right_need_columns.remove(key)
 
+        if len(right_key) == 1:
+            right_orginal.rename(columns = {right_key:'key'},inplace=True)
+            return right_orginal
+        else:
+            right_orginal_result = right_orginal.loc[:,right_key[0]+right_need_columns]  # 获取第一个Dataframe 方便合并
+            right_orginal_result.rename(columns={right_key[0]: 'key'}, inplace=True)
+            for i in range(1,len(right_key)):
+                right_orginal_result_s = right_orginal.loc[:, right_key[i] + right_need_columns]
+                right_orginal_result_s.rename(columns={right_key[i]: 'key'}, inplace=True)
+                right_orginal_result = pd.concat([right_orginal_result,right_orginal_result_s],axis=0,ignore_index=True)
+            return right_orginal_result
 
 
     def both_merge(self):

@@ -8,15 +8,15 @@
 #email:854426089@qq.com
 
 import pandas as pd
-import sys
 
-class Both_collect:
-    def __init__(self,datasoure_left,datasoure_right,aim_columns_name,match_columns_name,needed_columns,lable,keep,combine = True):
-        self.aim_columns_name = aim_columns_name.split("$")
-        self.match_columns_name = match_columns_name.split("$")
-        self.needed_columns = needed_columns.split("$")
-        self.Data_orginal_left = datasoure_left
-        self.Data_orginal_right = datasoure_right
+class Welookup:
+    #def __init__(self,left,right,left_col = ,match_columns_name,needed_columns,lable,keep,combine = True):
+    def __init__(self,left,right,left_col,right_col,get,lable,keep='first',combine = True):
+        self.Data_orginal_left = left
+        self.Data_orginal_right = right
+        self.aim_columns_name = left_col.split("$")
+        self.match_columns_name = right_col.split("$")
+        self.needed_columns = get.split("$")
         _need_columns = self.match_columns_name.copy()
         _need_columns += [value for value in self.needed_columns]
         # print(_need_columns)
@@ -89,46 +89,46 @@ class Both_collect:
             return welookup_data
 
 
-class welookup:
-    def __init__(self, aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns,lable,keep = "first",combine = True):
-        '''
-        -----------------------------------------------------------------------------------------------------------------
-        :param aim_soure: 目标数据源（匹配合并数据）
-        :param match_soure: 需要被合并的数据源
-        :param aim_columns_name: 用于左连接的key列名
-        :param match_columns_name: 用于被连接的key列名
-        :param needed_columns: 需要被匹配到aim_soure中的列名
-        :param lable：输出匹配列的备注标签 例如：备注标签：现金券  匹配的结果：店铺id_现金券
-        :param combine：是否合并多对多匹配出来的多个列
-        -----------------------------------------------------------------------------------------------------------------
-        '''
-        self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns = aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns
-        self.lable,self.combine = lable,combine
-        self.keep = keep
-
-    def summary(self):
-        '''
-        -----------------------------------------------------------------------------------------------------------------
-        主程序：提取读取数据，进行数据合并
-        -----------------------------------------------------------------------------------------------------------------
-        参数说明：
-        Input_Data(aim_soure[目标数据],match_soure[被匹配数据]) ps:输入的数据类型：dataframe
-        Both_collect(aim_columns_name[目标匹配的key列],match_columns_name[被匹配的key列],needed_columns[需要匹配内容的列],->
-        ->  aim_soure[左表数据源dataframe],match_soure[右表数据源dataframe])  ps:多个列名用“$”分割
-        -----------------------------------------------------------------------------------------------------------------
-        :return: combine_dataframe 是一个数据结构是pandas的Dataframe（合并后的结果）
-        -----------------------------------------------------------------------------------------------------------------
-        '''
-        combine_dataframe = Both_collect(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns,self.lable,self.keep,self.combine).aim_match()
-        return combine_dataframe
+# class welookup:
+#     def __init__(self, aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns,lable,keep = "first",combine = True):
+#         '''
+#         -----------------------------------------------------------------------------------------------------------------
+#         :param aim_soure: 目标数据源（匹配合并数据）
+#         :param match_soure: 需要被合并的数据源
+#         :param aim_columns_name: 用于左连接的key列名
+#         :param match_columns_name: 用于被连接的key列名
+#         :param needed_columns: 需要被匹配到aim_soure中的列名
+#         :param lable：输出匹配列的备注标签 例如：备注标签：现金券  匹配的结果：店铺id_现金券
+#         :param combine：是否合并多对多匹配出来的多个列
+#         -----------------------------------------------------------------------------------------------------------------
+#         '''
+#         self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns = aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns
+#         self.lable,self.combine = lable,combine
+#         self.keep = keep
+#
+#     def summary(self):
+#         '''
+#         -----------------------------------------------------------------------------------------------------------------
+#         主程序：提取读取数据，进行数据合并
+#         -----------------------------------------------------------------------------------------------------------------
+#         参数说明：
+#         Input_Data(aim_soure[目标数据],match_soure[被匹配数据]) ps:输入的数据类型：dataframe
+#         Both_collect(aim_columns_name[目标匹配的key列],match_columns_name[被匹配的key列],needed_columns[需要匹配内容的列],->
+#         ->  aim_soure[左表数据源dataframe],match_soure[右表数据源dataframe])  ps:多个列名用“$”分割
+#         -----------------------------------------------------------------------------------------------------------------
+#         :return: combine_dataframe 是一个数据结构是pandas的Dataframe（合并后的结果）
+#         -----------------------------------------------------------------------------------------------------------------
+#         '''
+#         combine_dataframe = Both_collect(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns,self.lable,self.keep,self.combine).aim_match()
+#         return combine_dataframe
 
 
 if __name__ == '__main__':
-    aim = pd.read_excel(r"F:\ljc_file\每日工作\20181017 地区统计\20181017家装索票地区数据统计_工作记录.xlsx",
-                        converters={'索票人手机号': str, '爱人手机号': str})
-    match = pd.read_hdf(r"F:\ljc_file\data_manage\h5\20180909finally_tab.h5")
-    aim = welookup(aim_soure=aim, match_soure=match, aim_columns_name="索票人手机号$爱人手机号", match_columns_name='新郎手机$新娘手机',
-                   needed_columns='婚博会id$所属省$所属市$所属区$详细地址', lable='终表').summary()
+    aim = pd.read_excel(r"C:\Users\85442\Desktop\20181102余量\测试A多.xlsx",
+                        converters={'loveId': str})
+    match = pd.read_excel(r"C:\Users\85442\Desktop\20181102余量\测试B短.xlsx",converters={'loveId': str})
+    aim = welookup(aim_soure=aim, match_soure=match, aim_columns_name="loveId", match_columns_name='loveId',
+                   needed_columns='未通次数$未通日期', lable='终表').summary()
     print(aim)
     # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
     #                match_info=sys.argv)
