@@ -1,0 +1,34 @@
+#category:script
+#author:jc
+#cn_name:二遍判定清洗
+#markdowm:新增标记-二遍通话 来 不确定 营销不全
+#版本:2018冬-20181001
+#辅助:
+
+new_column_name = '二遍判定清洗'
+get_columns = ['二次电话判定']
+
+###########################数据源输入变量名 frame#######################
+#############################your script#################################
+#ex
+
+#通话
+call_index = frame[~frame['二次电话判定'].isin(['未打','未通','三天未通',""])].index
+frame.loc[call_index,'通话_二遍判定'] = 1
+
+#来
+come_index = frame[(~frame['二次电话判定'].str.contains('营销不全|不确定'))&(frame['二次电话判定'].str.contains('^婚博会',regex = True))].index
+frame.loc[come_index,'来_二遍判定'] = 1
+
+#不确定
+uncertain_index = frame[frame['二次电话判定'].str.contains('不确定')].index
+frame.loc[uncertain_index,'不确定_二遍判定'] = 1
+
+#营销不全
+sellnotfull_index = frame[frame['二次电话判定'].str.contains('营销不全')].index
+frame.loc[sellnotfull_index,'营销不全_二遍判定'] = 1
+
+#################################End########################################
+#输出的变量需要命名为 frame
+
+

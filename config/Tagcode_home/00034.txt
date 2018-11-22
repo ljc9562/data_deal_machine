@@ -1,0 +1,25 @@
+#category:re
+#author:jc
+#cn_name:区分会员类型_tag
+#markdowm:区分会员的类型是 回归 回访 新会员
+#版本:2018冬-20181001
+#辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
+#逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
+#若输出是按列操作 需要加入frame[...]
+
+
+new_column_name = '区分会员类型'
+columns_type = 'str'
+
+#format
+#what->(frame['needcolumnsname']==XX)
+
+rule = \
+[
+#XX包含XX
+"回访->(frame['本届索票信息']=='')&(frame['身份等级']!='新会员')",
+"回归->(frame['本届索票信息']!='')&(frame['身份等级']!='新会员')",
+"新会员->(frame['身份等级']=='新会员')"
+]
+
+else_value = ""

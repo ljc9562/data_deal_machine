@@ -68,7 +68,7 @@ class Tagcode_deal:
 
 
 class Wetagging:
-    def __init__(self,frame,file,debug = False,col = None):
+    def __init__(self,frame,file,debug = False,col = None,model = None):
         '''
         提供对外部导入标签配置文件处理的工具
         :param frame: 导入已经转化为Dataframe的数据
@@ -84,7 +84,7 @@ class Wetagging:
             self.script_dir,self.category = Tagcode_deal(file).submit_file()
         self.debug = debug
         self.col = col
-
+        self.model = model
 
     def re_hitting_tag(self,frame):
         '''
@@ -133,6 +133,7 @@ class Wetagging:
         info_get = [i for i in info if ('new_column_name' in i or 'get_columns' in i) and ('frame' not in i)]  #获取new_column和get_columns的信息
         new_column_name = info_get[0].split('=',1)[1].replace(" ","") #获取新建的列名
         get_columns = eval(info_get[1].split('=',1)[1])#获取需要处理的列用于debug
+        model = self.model
         exec(open(self.script_dir, encoding='UTF-8').read())  # 标签脚本提交,提交执行script
         return frame,new_column_name,get_columns
 

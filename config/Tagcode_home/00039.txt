@@ -1,14 +1,14 @@
 #category:re
 #author:jc
-#cn_name:单方信息
-#markdowm:单方信息:一次电话内容 包含 单方
-#版本:2017冬-20171216
+#cn_name:婚博会有礼
+#markdowm:标记婚博会有礼 判定开头为婚博会,不包含判断不清
+#版本:2018冬-20181001
 #辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
 #逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
 #若输出是按列操作 需要加入frame[...]
 
 
-new_column_name = '单方信息_tag'
+new_column_name = '婚博会有礼'
 columns_type = 'str'
 
 #format
@@ -16,7 +16,8 @@ columns_type = 'str'
 
 rule = \
 [
-"单方信息->((frame['新娘']=='')&(frame['新娘手机']==''))|((frame['新郎']=='')&(frame['新郎手机']==''))"
+#婚博会有礼
+"1->(frame['一次电话判定'].str.contains('^婚博会',regex = True))&(~frame['一次电话判定'].str.contains('判断不清'))"
 ]
 
 else_value = ""

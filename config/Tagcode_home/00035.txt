@@ -1,0 +1,62 @@
+#category:script
+#author:jc
+#cn_name:需求项转码为固定值
+#markdowm:对需求项进行转码,在exhibition_relation中指定需要转码的列,在judge_model中指定需要编码的值,在修改judge_lable和other_lable指定填充的值
+#版本:2018冬-20181001
+#辅助:
+
+new_column_name = '需求项处理'
+get_columns = ['婚纱摄影','婚宴酒店','婚庆公司','结婚钻戒','婚纱礼服','结婚百货','新娘美容','婚车租赁']
+
+###########################数据源输入变量名 frame#######################
+#############################your script#################################
+#ex
+class Demand_deal:
+    def __init__(self,frame,model):
+        '''
+        1:未定/2:已定/3:未交流出结果/4:无需求/5:婚博会已定/
+        6:官网定/7:会员节订单/8:需再次订购/9:商家提供展会订单/
+        51:再订(婚博会已定)/61:再订(官网已定)/71:再订(会员节已定)/
+        91:再订(商家提供已定)
+        '''
+        self.frame = frame
+        self.exhibition_relation = {
+            '婚博会':['婚纱摄影','婚宴酒店','婚庆公司','结婚钻戒','婚纱礼服','结婚百货','婚车租赁']
+        }
+        self.judge_model = {
+            '广义未定':['1','3','8','51','61','71','91'],
+            '狭义未定':['1','51','61','71','91']
+        }
+        self.model = model
+    
+    
+    def type_transfrom(self,exhibition_key_name,judge_key_name,judge_lable = 1,other_lable = 0):
+        '''
+        标签默认是判定在judge中的为1,否则为0,还可以自定义文字形式
+        '''
+        judge_list = self.judge_model.get(judge_key_name)
+        for item in self.exhibition_relation.get(exhibition_key_name):
+            all_index = self.frame.index.tolist()
+            astype_index = self.frame[self.frame[item].isin(judge_list)].index.tolist()
+            not_asytpe_index = list(set(all_index).difference(set(astype_index)))
+            self.frame.loc[astype_index,item] = judge_lable
+            self.frame.loc[not_asytpe_index,item] = other_lable
+        return self.frame
+        
+    def summary(self):
+        if self.model == 1:
+            result = self.type_transfrom('婚博会','狭义未定',judge_lable = 1,other_lable = 0)
+            return result
+        else:
+            return self.frame
+        
+        
+            
+frame = Demand_deal(frame,model = model).summary()
+
+#################################End########################################
+#输出的变量需要命名为 frame
+
+
+
+

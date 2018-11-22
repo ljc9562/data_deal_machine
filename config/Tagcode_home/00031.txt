@@ -1,0 +1,84 @@
+#category:script
+#author:jc
+#cn_name:波波表第一部分标签
+#markdowm:bobo表数据源(每日回收表部分标签1) 新人身份/渠道类型/索票状态/PC/WAP.几列标签创建
+#版本:2018冬-20181020
+#辅助:
+
+new_column_name = 'bobobiao新建几列'
+get_columns = ['一次电话内容','一次电话判定','一次电话分配日期','用户来源','媒体来源','填写日期','填写时段','本届索票信息']
+
+###########################数据源输入变量名 frame#######################
+#############################your script#################################
+#ex
+
+def news_identify(data):
+	if data[0]!='新会员' : #身份等级
+		return '回归'
+	else:
+		return '新会员'
+frame['新人身份'] = frame[['身份等级']].apply(news_identify,axis = 1)
+
+
+def channel(data):
+	uid = data[0]  #用户来源
+	src = data[1]  #媒体来源
+	if ('douyin' in src or 'dy' in src) and ("jinritoutiao" in uid):
+		return '抖音'
+	elif "jinritoutiao" in uid:
+		return '今日头条'
+	elif "weibo" in uid:
+		return '微博'
+	elif 'guangdiantong' in uid:
+		return '广点通'
+	elif uid == 'EDM':
+		return '邮件'
+	else:
+		return '其他'
+		
+frame['渠道类型'] = frame[['用户来源','媒体来源']].apply(channel,axis = 1)
+
+def get_ticket_status(data):
+	ticket_info = data[0]  # 本届索票信息
+	if '完整' in ticket_info or '补全' in ticket_info:
+		return '完整'
+	elif '第二步' in ticket_info:
+		return '2步未完成'
+	elif '第一步' in ticket_info:
+		return '1步未完成'
+	elif '未完成' in ticket_info:
+		return '1步未完成'
+	else:
+		return ''
+
+frame['索票状态'] = frame[['本届索票信息']].apply(get_ticket_status,axis = 1)
+
+def pc_or_wap(data):
+	ticket_info = data[0] #本届索票信息
+	if '手机婚博会' in ticket_info :
+		return 'WAP'
+	elif '婚博会' in ticket_info:
+		return 'PC'
+	else:
+		return ''
+frame['PC/WAP'] = frame[['本届索票信息']].apply(pc_or_wap,axis = 1)
+
+frame['整合类型_tag'] = frame['新人身份']+frame['渠道类型']+frame['索票状态']+frame['PC/WAP']
+
+
+
+
+
+
+
+
+
+
+
+#################################End########################################
+#输出的变量需要命名为 frame
+
+#ex
+# frame[new_column_name] = frame[get_columns].apply(aa,axis = 1)
+
+

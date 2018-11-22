@@ -1,0 +1,64 @@
+#category:script
+#author:jc
+#cn_name:日期对比
+#markdowm:用于计算日期差值,对应生成标签(model=1处理二遍电话活动统计类型)
+#版本:2018冬-20181001
+#辅助:
+
+new_column_name = '日期对比脚本'
+get_columns = ['']
+
+###########################数据源输入变量名 frame#######################
+#############################your script#################################
+class time_different_deal:
+    def __init__(self,frame,model):
+        self.frame = frame
+        self.needed_deal_col = {
+            '二遍电话活动统计':['摇一摇的时间_HUE','领券时间_HUE','安装时间_HUE','助力时间_HUE']
+        }
+        # 默认 时间format '%Y-%m-%d %H:%M:%S'
+        self.special_time_format = {}
+        self.model = model
+        
+    def diff(self,col_key,col_reduce,aim_key_list,judge_rule):
+        deal_col = self.needed_deal_col.get(col_key)
+        for sub,value in enumerate(deal_col):
+            
+            if self.special_time_format.get(value):
+                deal_col_format = self.special_time_format.get(value)
+            else:deal_col_format = '%Y-%m-%d %H:%M:%S'
+            if self.special_time_format.get(col_reduce):
+                reduce_col_format = self.special_time_format.get(col_reduce)
+            else:reduce_col_format =  '%Y-%m-%d %H:%M:%S'
+                
+            diff = pd.to_datetime(self.frame[value],format=deal_col_format) - pd.to_datetime(self.frame[col_reduce],format=reduce_col_format)
+            diff = diff.apply(lambda x:x.days)
+            for rule in judge_rule:
+                self.frame.loc[diff[eval(judge_rule.get(rule))].index ,aim_key_list[sub]] = rule
+                self.frame[aim_key_list[sub]] = self.frame[aim_key_list[sub]].fillna("")
+        return self.frame
+            
+            
+    def summary(self):
+        #diff 代表天数相减的结果
+        if self.model == 1 :
+            judge_rule = {
+                '二遍前':'diff<0',
+                '二遍当天':'diff==0',
+                '第二天':'diff == 1',
+                '第三天以之后' :'diff >= 2'
+            }
+            aim_list = ['日期对比_签到礼','日期对比_领券','日期对比_app','日期对比_助力']
+            result = self.diff(col_key = '二遍电话活动统计',col_reduce = '二次电话分配日期',aim_key_list = aim_list,judge_rule = judge_rule)
+            for time,aim_col in zip(self.needed_deal_col.get('二遍电话活动统计') , aim_list):
+                fill_index = result[(result[time]!="")&(result['二次电话分配日期']=="")].index
+                result.loc[fill_index,aim_col] = '二遍前'
+        return result
+
+#################################End########################################
+#输出的变量需要命名为 frame
+
+#ex
+frame = time_different_deal(frame,model=model).summary()
+
+

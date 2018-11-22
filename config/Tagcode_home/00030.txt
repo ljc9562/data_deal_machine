@@ -1,7 +1,7 @@
 #category:script
 #author:jc
 #cn_name:问出重点
-#markdowm:判断展会问出重点的情况 输出结果0为未问出 1代表问出
+#markdowm:判断展会问出重点的情况 输出结果0为未问出 1代表问出 (输出重点项数,是否有重点,重点看旅拍..重点项转换为数字型)
 #版本:2018冬-20181001
 #辅助:
 
@@ -31,21 +31,22 @@ class Importance_Statistic(object):
     
     def Preprocessing_Deal(self,Data_original):
         ##重点项重构##
-        Data_original[u'重点看旅拍'],Data_original[u'重点看海外婚礼'] = 0,0
-        
+        #Data_original[u'重点看旅拍'],Data_original[u'重点看海外婚礼'] = 0,0
+        Data_original[u'重点看旅拍'] = 0
+		
         Index_lvpai = Data_original[((Data_original[u'婚照需求'].str.contains(u'旅拍')) & (Data_original[u'重点看婚纱摄影'].astype(str) == '1')) |
-                                    ((Data_original[u'旅游需求'].str.contains(u'旅拍')) & (Data_original[u'重点看旅游'].astype(str) == '1'))].index
+                                    (Data_original[u'旅游需求'].str.contains(u'旅拍')) ].index
         Data_original.loc[Index_lvpai,u'重点看旅拍'] = 1
         
-        Index_travel = Data_original[Data_original[u'旅游需求'] == u'旅拍'].index
-        Data_original.loc[Index_travel,u'重点看旅游'] = 0
+        #Index_travel = Data_original[Data_original[u'旅游需求'] == u'旅拍'].index
+        #Data_original.loc[Index_travel,u'重点看旅游'] = 0
         
         Index_weddingphoto = Data_original[Data_original[u'婚照需求'] == u'旅拍'].index
         Data_original.loc[Index_weddingphoto,u'重点看婚纱摄影'] = 0
         
-        Index_weddingabroad = Data_original[(Data_original[u'旅游需求'].str.contains(u'海外婚礼')) &\
-                                            (Data_original[u'重点看旅游'].astype(str) == '1')].index
-        Data_original.loc[Index_weddingabroad,u'重点看海外婚礼'] = 1
+        #Index_weddingabroad = Data_original[(Data_original[u'旅游需求'].str.contains(u'海外婚礼')) &\
+        #                                    (Data_original[u'重点看旅游'].astype(str) == '1')].index
+        #Data_original.loc[Index_weddingabroad,u'重点看海外婚礼'] = 1
     
         Index_lvadjust = Data_original[Data_original[u'重点看婚纱摄影'].astype(str) == '1'].index
         Data_original.loc[Index_lvadjust,u'重点看旅拍'] = 0
@@ -94,9 +95,13 @@ class Importance_Statistic(object):
 
 #ex
 frame = Importance_Statistic(frame,Data_importance).Summary_Importance_Statistic()
-for name in ['重点看旅拍','重点看海外婚礼','重点','有效']:
+
+
+
+for name in ['有效']:
 	del frame[name]
-frame.rename(columns = {'重点项':'问出重点_tag'},inplace=True)
+frame.rename(columns = {'重点项':'是否有重点'},inplace=True)
+frame.rename(columns = {'重点':'重点数'},inplace=True)
 
 
 

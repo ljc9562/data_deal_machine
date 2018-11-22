@@ -1,0 +1,136 @@
+#category:script
+#author:jc
+#cn_name:波波表_索票表标签1
+#markdowm:生成以下波波表需要的标签:索票日期/索票周数/渠道/表单/索票状态/新会员/总索票-1步/总索票-2步/总索票-完整/新会员-1步/新会员-2步/新会员-完整/打通-1步/打通-2步/打通-完整/婚博会有效-1步/婚博会有效-2步/婚博会有效-完整   (ps:渠道[不区分邮件,剩余不标记其它,变为空白]
+#版本:2018冬-20181023
+#辅助:
+
+new_column_name = '波波表_索票表标签1'
+get_columns = ['一次电话判定']
+
+###########################数据源输入变量名 frame#######################
+#############################your script#################################
+
+########  索票日期  #########################
+frame['电话日期'] = frame['一次电话分配日期'].str.slice(0,10,1)
+frame['索票日期'] = frame['索票时间'].str.slice(0,10,1)
+######################################
+
+########  索票周数  ##################
+frame['星期辅助_索票日期'] = pd.to_datetime(frame['索票日期'])
+frame['星期辅助_星期参数'] = frame['星期辅助_索票日期'].dt.weekday   #The day of the week with Monday=0, Sunday=6
+def week(num):
+	days = {0:'星期一',1:'星期二',2:'星期三',3:'星期四',4:'星期五',5:'星期六',6:'星期日'}
+	return days[num[0]]
+
+frame['索票周数'] = frame[['星期辅助_星期参数']].apply(week,axis = 1)
+#for d in ['星期辅助_索票日期','星期辅助_星期参数']
+#	del frame[d]
+######################################
+
+########  渠道  ##################
+def channel(data):
+	uid = data[0]  #用户来源(uid)
+	src = data[1]  #索票来源(src)
+	if ('douyin' in src or 'dy' in src) and ("jinritoutiao" in uid):
+		return '抖音'
+	elif "jinritoutiao" in uid:
+		return '今日头条'
+	elif "weibo" in uid:
+		return '微博'
+	elif 'guangdiantong' in uid:
+		return '广点通'
+	elif uid == 'EDM' or 'edm' in uid:
+		return '邮件'
+	else:
+		return '其他'
+		
+frame['渠道'] = frame[['用户来源(uid)','索票来源(src)']].apply(channel,axis = 1)
+
+##################################
+
+
+########  索票状态  ##################
+def get_ticket_status(data):
+	ticket_info = data[0]  # 索票状态
+	if ticket_info=='完成' or  ticket_info =='补全' :
+		return '完整'
+	elif '第二步' in ticket_info:
+		return '2步'
+	elif '第一步' in ticket_info:
+		return '1步'
+	elif '未完成' in ticket_info:
+		return '1步'
+	else:
+		return ''
+
+frame['索票状态2'] = frame[['索票状态']].apply(get_ticket_status,axis = 1)
+##################################
+
+########  新人身份  ##################
+def news_identify(data):
+	if data[0]!='新会员' : #身份
+		return '回归'
+	else:
+		return '新会员'
+frame['新人身份'] = frame[['身份']].apply(news_identify,axis = 1)
+##################################
+
+########  索票状态  ##################
+def pc_or_wap(data):
+	ticket_info = data[0] #本届索票信息
+	if '手机婚博会' in ticket_info :
+		return 'WAP'
+	elif '婚博会' in ticket_info:
+		return 'PC'
+	else:
+		return ''
+frame['PC/WAP'] = frame[['展会类型']].apply(pc_or_wap,axis = 1)
+##################################
+
+########  整合类型_tag  ##################
+frame['整合类型_tag'] = frame['新人身份']+frame['渠道']+frame['索票状态2']+frame['PC/WAP']
+##################################
+
+
+########  新会员  ##################
+new_identify_index = frame[(frame['身份']=='新会员')].index.tolist()
+frame.loc[new_identify_index,'新会员']=1
+##################################
+
+########  总索票-信息完整度  ##################
+for i in ['1步','2步','完整']:
+	name = '总索票-'+i
+	other_index = frame[(frame['索票状态2']==i)].index.tolist()
+	frame.loc[other_index,name] = 1
+
+##################################
+
+
+########  新会员-信息完整度  ##################
+for i in ['1步','2步','完整']:
+	name = '新会员-'+i
+	other_index = frame[(frame['索票状态2']==i)&(frame['新会员']==1)].index.tolist()
+	frame.loc[other_index,name] = 1
+
+##################################
+
+
+########  打通-信息完整度  ##################
+for i in ['1步','2步','完整']:
+	name = '打通-'+i
+	other_index = frame[(frame['索票状态2']==i)&(frame['打通']==1)].index.tolist()
+	frame.loc[other_index,name] = 1
+
+##################################
+
+########  婚博会有效-信息完整度  ##################
+for i in ['1步','2步','完整']:
+	name = '婚博会有效-'+i
+	other_index = frame[(frame['索票状态2']==i)&(frame['婚博会有效']==1)].index.tolist()
+	frame.loc[other_index,name] = 1
+
+##################################
+
+
+#################################End########################################

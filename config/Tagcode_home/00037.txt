@@ -1,14 +1,14 @@
 #category:re
-#author:jc
-#cn_name:单方信息
-#markdowm:单方信息:一次电话内容 包含 单方
-#版本:2017冬-20171216
+#author:hc
+#cn_name:负责人地区
+#markdowm:匹配电话负责人
+#版本:2018冬-20181001
 #辅助 包含[str.contains] ps(如果需要正则,增加参数regex = True)
 #逻辑符号  1.和["&"]  2.且["|"]  3.非["~"]  [4.开头["^(.*?)"]  5.结尾["(.*?)$"],需要增加参数regex = True]
 #若输出是按列操作 需要加入frame[...]
 
 
-new_column_name = '单方信息_tag'
+new_column_name = '负责人所属地区_二遍'
 columns_type = 'str'
 
 #format
@@ -16,7 +16,10 @@ columns_type = 'str'
 
 rule = \
 [
-"单方信息->((frame['新娘']=='')&(frame['新娘手机']==''))|((frame['新郎']=='')&(frame['新郎手机']==''))"
+#XX包含XX
+"武汉->(frame['二遍电话负责人'].str.contains('武汉'))",
+"杭州->(frame['二遍电话负责人'].str.contains('杭州'))",
+"广州->(frame['二遍电话负责人']!='')"
 ]
 
 else_value = ""
