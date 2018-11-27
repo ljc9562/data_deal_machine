@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 class Welookup:
     def __init__(self, left, right, on=None,
                  left_col=None, right_col=None, need=None,
