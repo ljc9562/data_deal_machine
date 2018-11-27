@@ -13,11 +13,11 @@ get_columns = ['二次电话判定']
 #ex
 
 #通话
-call_index = frame[~frame['二次电话判定'].isin(['未打','未通','三天未通',"","喜宴组","婚庆组","双空错号"])].index
+call_index = frame[(~frame['二次电话判定'].isin(['三天未通','未打','未通',"","喜宴组","婚庆组","双空错号"]))&(frame['二次电话判定']!='未通')].index
 frame.loc[call_index,'通话_二遍判定'] = 1
 
 #来
-come_index = frame[(~frame['二次电话判定'].str.contains('营销不全|不确定'))&(frame['二次电话判定'].str.contains('^婚博会',regex = True))].index
+come_index = frame[(~frame['二次电话判定'].str.contains('营销不全|不确定|判断不清'))&(frame['二次电话判定'].str.contains('^婚博会|^珠宝',regex = True))].index
 frame.loc[come_index,'来_二遍判定'] = 1
 
 #不确定

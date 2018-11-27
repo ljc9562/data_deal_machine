@@ -16,7 +16,7 @@ columns_type = 'str'
 
 rule = \
 [
-"ocpc->(frame['本届索票信息'].str.contains('婚博会'))&(~frame['媒体来源'].str.contains('ocpc|ocpm|OCPC|OCPM'))",
+"ocpc->(frame['本届索票信息'].str.contains('婚博会'))&(frame['媒体来源'].str.contains('ocpc|ocpm|OCPC|OCPM'))",
 "ocpc->frame['本届索票信息'].str.contains('家装')&frame['用户来源'].isin(['jinritoutiaozt','sinaweibo','sinaweibo09','sinaweibo9','sinaweibo12','pengyouquan1','pengyouquanwb','txguangdiantong6','douyinwb','jinritoutiaowb','baiduxxl'])"
 ]
 

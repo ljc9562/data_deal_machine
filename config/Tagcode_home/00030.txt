@@ -17,75 +17,78 @@ Data_importance = pd.read_excel(r"Z:\automation\Statistic_Daily_31\Configs\字�
 
 		
 class Importance_Statistic(object):
-    def __init__(self,Data_original,Data_importance):
-        
+    def __init__(self, Data_original, Data_importance):
+
         self.Data_original = Data_original
         self.Data_importance = Data_importance
-    
-    def  Summary_Importance_Statistic(self):
-        
+
+    def Summary_Importance_Statistic(self):
+
         self.Data_original = self.Preprocessing_Deal(self.Data_original)
-        self.Data_original = self.Importance_Deal(self.Data_original,self.Data_importance)
-        
-        return(self.Data_original)
-    
-    def Preprocessing_Deal(self,Data_original):
+        self.Data_original = self.Importance_Deal(self.Data_original, self.Data_importance)
+
+        return (self.Data_original)
+
+    def Preprocessing_Deal(self, Data_original):
         ##重点项重构##
         Data_original[u'重点看旅拍'] = 0
-		
-		
-		
-        Index_lvpai = Data_original[((Data_original[u'婚照需求'].str.contains(u'旅拍')) & (Data_original[u'重点看婚纱摄影'].astype(str) == '1')) |
-                                    (Data_original[u'旅游需求'].str.contains(u'旅拍')) ].index
-        Data_original.loc[Index_lvpai,u'重点看旅拍'] = 1
-        
-        #Index_travel = Data_original[Data_original[u'旅游需求'] == u'旅拍'].index
-        #Data_original.loc[Index_travel,u'重点看旅游'] = 0
-        
-        Index_weddingphoto = Data_original[Data_original[u'婚照需求'] == u'旅拍'].index
-        Data_original.loc[Index_weddingphoto,u'重点看婚纱摄影'] = 0
-    
+
+        Index_lvpai = Data_original[
+            ((Data_original[u'婚照需求'].str.contains(u'旅拍'))& (~Data_original[u'婚照需求'].str.contains('本地拍')) & (Data_original[u'重点看婚纱摄影'].astype(str) == '1')) |
+            ((Data_original[u'旅游需求'].str.contains(u'旅拍')) & (Data_original[u'重点看旅游'].astype(str) == '1'))].index
+        Data_original.loc[Index_lvpai, u'重点看旅拍'] = 1
+
+        #Index_travel = Data_original[Data_original[u'旅游需求'].str.contains('旅拍')].index
+        #Data_original.loc[Index_travel, u'重点看旅拍'] = 1
+
+        #Index_weddingphoto = Data_original[
+        #    (Data_original[u'婚照需求'].str.contains('旅拍')) & (~Data_original[u'婚照需求'].str.contains('本地拍'))].index
+        #Data_original.loc[Index_weddingphoto, u'重点看旅拍'] = 1
+
+        Index_clean_photo = Data_original[((Data_original[u'婚照需求'].str.contains(u'旅拍'))& (~Data_original[u'婚照需求'].str.contains('本地拍')) & (Data_original[u'重点看婚纱摄影'].astype(str) == '1'))].index
+        Data_original.loc[Index_clean_photo, u'重点看婚纱摄影'] = 0
+
         Index_lvadjust = Data_original[Data_original[u'重点看婚纱摄影'].astype(str) == '1'].index
-        Data_original.loc[Index_lvadjust,u'重点看旅拍'] = 0
-    
-        return(Data_original)
-    
-    def Importance_Deal(self,Data_original,Data_importance):
+        Data_original.loc[Index_lvadjust, u'重点看旅拍'] = 0
+
+        return (Data_original)
+
+    def Importance_Deal(self, Data_original, Data_importance):
         ##重点项处理##
-        Dict_Exhibitions = {u'儿博':u'儿博会',
-                            u'家博':u'家博会',
-                            u'珠宝':u'婚博会',
-                            u'旅游':u'婚博会',
-                            u'婚博':u'婚博会',
+        Dict_Exhibitions = {u'儿博': u'儿博会',
+                            u'家博': u'家博会',
+                            u'珠宝': u'婚博会',
+                            u'旅游': u'婚博会',
+                            u'婚博': u'婚博会',
                             }
         Data_original[u'重点项'] = 0
-        
+
         for item in Dict_Exhibitions.keys():
             Data_original[u'重点'] = 0
             Data_original[u'有效'] = 0
-            Index_validity = Data_original[Data_original[u'一次电话判定'].str.contains(item,regex = True)].index
-            Data_original.loc[Index_validity,[u'有效']] = 1
-            List_importance = Data_importance[Data_importance[u'展会'] == Dict_Exhibitions[item]][u'字段-重点看'].values.tolist()
-            
+            Index_validity = Data_original[Data_original[u'一次电话判定'].str.contains(item, regex=True)].index
+            Data_original.loc[Index_validity, [u'有效']] = 1
+            List_importance = Data_importance[Data_importance[u'展会'] == Dict_Exhibitions[item]][
+                u'字段-重点看'].values.tolist()
+
             for item1 in List_importance:
                 if item1 in Data_original.columns:
-                    Data_original[item1] = Data_original[item1].replace('',0).astype(int)
-                    Data_original[u'重点'] = Data_original[u'重点'] + Data_original[item1]            
+                    Data_original[item1] = Data_original[item1].replace('', 0).astype(int)
+                    Data_original[u'重点'] = Data_original[u'重点'] + Data_original[item1]
                 else:
                     pass
-            
+
             if Dict_Exhibitions[item] == u'婚博会':
                 Index_importance = Data_original[(Data_original[u'有效'] == 1) &
                                                  (Data_original[u'重点'] >= 1) &
                                                  (Data_original[u'重点'] <= 3)].index
-                Data_original.loc[Index_importance,[u'重点项']] = 1
+                Data_original.loc[Index_importance, [u'重点项']] = 1
             else:
-                Index_importance = Data_original[(Data_original[u'有效'] == 1) & 
-                                                      (Data_original[u'重点'] > 0)].index
-                Data_original.loc[Index_importance,[u'重点项']] = 1
+                Index_importance = Data_original[(Data_original[u'有效'] == 1) &
+                                                 (Data_original[u'重点'] > 0)].index
+                Data_original.loc[Index_importance, [u'重点项']] = 1
 
-		
-        return(Data_original)
+        return (Data_original)
 
 #################################End########################################
 #输出的变量需要命名为 frame

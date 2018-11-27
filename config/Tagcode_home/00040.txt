@@ -45,7 +45,7 @@ class time_different_deal:
                 '二遍前':'diff<0',
                 '二遍当天':'diff==0',
                 '第二天':'diff == 1',
-                '第三天以之后' :'diff >= 2'
+                '第三天及之后' :'diff >= 2'
             }
             aim_list = ['日期对比_签到礼','日期对比_领券','日期对比_app','日期对比_助力']
             result = self.diff(col_key = '二遍电话活动统计',col_reduce = '二次电话分配日期',aim_key_list = aim_list,judge_rule = judge_rule)
