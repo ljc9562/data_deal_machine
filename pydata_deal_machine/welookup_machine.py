@@ -45,38 +45,39 @@ class Welookup:
                 columns={
                     signal_right_key: 'key_right'},
                 inplace=True)
-            right_orginal['key_right'] = right_orginal['key_right'].astype(str)
-            return right_key, right_need_columns, right_orginal
+            # right_orginal['key_right'] = right_orginal['key_right'].astype(str)
+            right_orginal_result = right_orginal
+            # return right_key, right_need_columns, right_orginal
         else:
             # 获取第一个Dataframe 方便合并
             first_right_key = right_key[0]
             right_orginal_result = right_orginal.loc[:, [
-                first_right_key] + right_need_columns]
+                first_right_key] + right_need_columns].fillna("")
             right_orginal_result.rename(
                 columns={first_right_key: 'key_right'}, inplace=True)
 
             # integrate the key with need columns when the count of key more than one
             for AnotherKey in range(1, len(right_key)):
                 right_orginal_result_s = right_orginal.loc[:, [
-                    right_key[AnotherKey]] + right_need_columns]
+                    right_key[AnotherKey]] + right_need_columns].fillna("")
                 right_orginal_result_s.rename(
                     columns={right_key[AnotherKey]: 'key_right'}, inplace=True)
                 right_orginal_result = pd.concat(
                     [right_orginal_result, right_orginal_result_s], axis=0, ignore_index=True)
 
-            #tranlate the type of right key
-            right_orginal_result['key_right'] = right_orginal_result['key_right'].astype(
-                str)
-            #drop duplicates by key_right
-            if self.sortby:
-                right_orginal_result = right_orginal_result.sort_values(self.sortby).drop_duplicates(['key_right'],keep=self.drop_duplicates_keep)
-            else:
-                right_orginal_result = right_orginal_result.drop_duplicates(['key_right'],
-                                                                            keep=self.drop_duplicates_keep)
-            # Eliminate null or ""
-            right_orginal_result = right_orginal_result[(
-                (right_orginal_result.key_right != "")) & (right_orginal_result.key_right.notnull())]
-            return right_key, right_need_columns, right_orginal_result
+        #tranlate the type of right key
+        right_orginal_result['key_right'] = right_orginal_result['key_right'].astype(
+            str)
+        #drop duplicates by key_right
+        if self.sortby:
+            right_orginal_result = right_orginal_result.sort_values(self.sortby).drop_duplicates(['key_right'],keep=self.drop_duplicates_keep)
+        else:
+            right_orginal_result = right_orginal_result.drop_duplicates(['key_right'],
+                                                                        keep=self.drop_duplicates_keep)
+        # Eliminate null or ""
+        null_index = right_orginal_result[right_orginal_result['key_right'] != ""].index
+        right_orginal_result = right_orginal_result.loc[null_index,:]
+        return right_key, right_need_columns, right_orginal_result
 
     def both_merge(self):
         left_keys, left_orginal_result = self.left_deal()
@@ -142,17 +143,20 @@ class Welookup:
 
 if __name__ == '__main__':
     aim = pd.read_excel(
-        r"C:\Users\85442\Desktop\20181102余量\测试A多.xlsx",
+        r"F:\ljc_file\每日工作\20181127 二遍统计\匹配A.xlsx",
         converters={
-            'loveId': str,
-            'loveId2': str},
-        keep_default_na=False)
-    match = pd.read_excel(
-        r"C:\Users\85442\Desktop\20181102余量\测试B短.xlsx",
-        converters={
-            'loveId': str,
-            'loveId2': str},
-        keep_default_na=False)
-    a = Welookup(aim, match, left_col='loveId2$loveId',
-                 right_col='loveId$loveId2',need='未通次数',sortby=['key_right','未通次数']).summary()
-    a.to_excel(r'C:\Users\85442\Desktop\测试结果3.xlsx', index=False)
+            '新郎手机': str,
+            '新娘手机': str},
+        keep_default_na=False).fillna("")
+    match = pd.read_csv(r"F:\temp\automation\we_workflow\success\coupon_20181125.csv", converters={'手机号': str},encoding='gbk').fillna("")
+    a = match[match['手机号']!=""].index
+    match = match.loc[a,:]
+    # match = pd.read_excel(
+    #     r"C:\Users\85442\Desktop\20181102余量\测试B短.xlsx",
+    #     converters={
+    #         'loveId': str,
+    #         'loveId2': str},
+    #     keep_default_na=False)
+
+    a= Welookup(left=aim, right=match, left_col='新郎手机$新娘手机', right_col='手机号', need='领券时间',lable='HUE').right_data_deal()
+    c.to_csv(r'F:\ljc_file\每日工作\20181127 二遍统计\测试结果3.csv', index=False,encoding = 'gbk')
