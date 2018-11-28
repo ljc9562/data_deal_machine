@@ -1,162 +1,148 @@
+###
+# 是一个多数据源匹配整合工具
+#1#识别数据源
+#2#判断匹配模式，执行一对一，一对多，多对多的匹配
+#3#输出Dataframe
+###
+#author:中国婚博会（广州）数据部
+#email:854426089@qq.com
+
 import pandas as pd
+import sys
 
-class Welookup:
-    def __init__(self, left, right, on=None,
-                 left_col=None, right_col=None, need=None,
-                 lable=None, drop_duplicates_keep='first',
-                 combine=True, sortby=None):
-
-        self.Data_orginal_left = left
-        self.Data_orginal_right = right
-        self.both_key = on
-
-        self.left_key = left_col
-        self.right_key = right_col
-        self.needed_columns = need
-
+class Both_collect:
+    def __init__(self,datasoure_left,datasoure_right,aim_columns_name,match_columns_name,needed_columns,lable,keep,combine = True):
+        self.aim_columns_name = aim_columns_name.split("$")
+        self.match_columns_name = match_columns_name.split("$")
+        self.needed_columns = needed_columns.split("$")
+        self.Data_orginal_left = datasoure_left
+        self.Data_orginal_right = datasoure_right
+        _need_columns = self.match_columns_name.copy()
+        _need_columns += [value for value in self.needed_columns]
+        # print(_need_columns)
+        self.Data_orginal_right = self.Data_orginal_right.loc[:,_need_columns]
         self.combine = combine
         self.lable = lable
-        self.drop_duplicates_keep = drop_duplicates_keep
-        self.sortby = sortby
+        self.keep = keep
 
-    def left_deal(self):
-        return self.left_key.split('$'), self.Data_orginal_left
+    def matched_key_deal(self):
+        _needed_columns_deal = self.needed_columns.copy()
+        _needed_columns_deal.append(self.match_columns_name[0])
+        Data_orginal_right_deal = self.Data_orginal_right.loc[:,_needed_columns_deal]
+        _needed_columns_deal.pop()
+        _needed_columns_deal.append('key')
+        Data_orginal_right_deal.columns = _needed_columns_deal
+        _needed_columns_deal.pop()
+        _needed_columns_deal = list(set(_needed_columns_deal))
+        if len(self.match_columns_name)>1:
+            for match_columns_num in range(1,len(self.match_columns_name)):
+                _needed_columns_deal.append(self.match_columns_name[match_columns_num])
+                Data_orginal_right_deal_more = self.Data_orginal_right.loc[:, _needed_columns_deal]
+                _needed_columns_deal.pop()
+                _needed_columns_deal.append('key')
+                Data_orginal_right_deal_more.columns = _needed_columns_deal
+                _needed_columns_deal.pop()
+                Data_orginal_right_deal = pd.concat([Data_orginal_right_deal,Data_orginal_right_deal_more],axis=0,ignore_index=True)
+        Data_orginal_right_deal = Data_orginal_right_deal.loc[:,:]
+        Data_orginal_right_deal['key'] = Data_orginal_right_deal['key'].str.strip()
+        Data_orginal_right_deal = Data_orginal_right_deal.drop_duplicates('key',keep=self.keep)
+        try:
+            Data_orginal_right_deal = Data_orginal_right_deal[Data_orginal_right_deal.key != ""]
+        except:
+            pass
+        # Data_orginal_right_deal = Data_orginal_right_deal.dropna()
+        return Data_orginal_right_deal
 
-    def right_data_extract(self):
-        right_key = self.right_key.split('$')
 
-        if not self.needed_columns:
-            right_need_columns = self.Data_orginal_right.columns.tolist()
-            for key in right_key:
-                right_need_columns.remove(key)
-            return right_key, right_need_columns, self.Data_orginal_right
+    def combine_tool(self,data):
+        self.data = data
+        # print(data)
+        result = ''
+        for i in range(len(self.data)):
+            if self.data[i] != '' :
+                result = self.data[i]
+
+        if str(result) != 'nan' or str(result) != 'None':
+            return result
         else:
-            right_need_columns = self.needed_columns.split('$')
-            right_get_columns = right_key + right_need_columns
-            return right_key, right_need_columns, self.Data_orginal_right.loc[:,
-                                                                              right_get_columns]
+            return  ""
 
-    def right_data_deal(self):
-        right_key, right_need_columns, right_orginal = self.right_data_extract()
 
-        if len(right_key) == 1:
-            signal_right_key = right_key[0]
-            right_orginal.rename(
-                columns={
-                    signal_right_key: 'key_right'},
-                inplace=True)
-            # right_orginal['key_right'] = right_orginal['key_right'].astype(str)
-            right_orginal_result = right_orginal
-            # return right_key, right_need_columns, right_orginal
-        else:
-            # 获取第一个Dataframe 方便合并
-            first_right_key = right_key[0]
-            right_orginal_result = right_orginal.loc[:, [
-                first_right_key] + right_need_columns].fillna("")
-            right_orginal_result.rename(
-                columns={first_right_key: 'key_right'}, inplace=True)
 
-            # integrate the key with need columns when the count of key more than one
-            for AnotherKey in range(1, len(right_key)):
-                right_orginal_result_s = right_orginal.loc[:, [
-                    right_key[AnotherKey]] + right_need_columns].fillna("")
-                right_orginal_result_s.rename(
-                    columns={right_key[AnotherKey]: 'key_right'}, inplace=True)
-                right_orginal_result = pd.concat(
-                    [right_orginal_result, right_orginal_result_s], axis=0, ignore_index=True)
 
-        #tranlate the type of right key
-        right_orginal_result['key_right'] = right_orginal_result['key_right'].astype(
-            str)
-        #drop duplicates by key_right
-        if self.sortby:
-            right_orginal_result = right_orginal_result.sort_values(self.sortby).drop_duplicates(['key_right'],keep=self.drop_duplicates_keep)
-        else:
-            right_orginal_result = right_orginal_result.drop_duplicates(['key_right'],
-                                                                        keep=self.drop_duplicates_keep)
-        # Eliminate null or ""
-        null_index = right_orginal_result[right_orginal_result['key_right'] != ""].index
-        right_orginal_result = right_orginal_result.loc[null_index,:]
-        return right_key, right_need_columns, right_orginal_result
-
-    def both_merge(self):
-        left_keys, left_orginal_result = self.left_deal()
-        right_keys, right_need_columns, right_orginal_result = self.right_data_deal()
-        for left_key in left_keys:
-            left_orginal_result = pd.merge(
-                left_orginal_result,
-                right_orginal_result,
-                left_on=left_key,
-                right_on='key_right',
-                how='left')
-        left_orginal_result = left_orginal_result.fillna("")
-        return left_keys, right_need_columns, left_orginal_result
-
-    def Integration_function(self, columns):
-        self.columns = columns
-        result = ""
-        for column in range(len(self.columns)):
-            if self.columns[column] != "":
-                result = self.columns[column]
+    def aim_match(self):
+        _Data_orginal_right_deal = self.matched_key_deal()
+        _needed_columns_deal2 = self.needed_columns.copy()
+        _needed_columns_deal2.append('key')
+        welookup_data = pd.merge(left=self.Data_orginal_left, right=_Data_orginal_right_deal, how='left',left_on=self.aim_columns_name[0], right_on='key').fillna("")
+        if len(self.aim_columns_name)>1:
+            for aim_col_num in range(1,len(self.aim_columns_name)):
+                welookup_data = pd.merge(left = welookup_data , right= _Data_orginal_right_deal,how='left',left_on=self.aim_columns_name[aim_col_num],right_on = 'key')
+            welookup_data = welookup_data.fillna("")
+            _combine_columns = welookup_data.columns.tolist()[len(welookup_data.columns.tolist())-len(self.aim_columns_name)*(len(self.needed_columns)+1):]
+            if  self.combine:
+                for columns in _needed_columns_deal2:
+                    _combine_col = [col for col in _combine_columns if col.startswith(f'{columns}')]
+                    welookup_data[f'{columns}_{self.lable}'] = welookup_data[list(_combine_col)].apply(self.combine_tool,axis = 1)
+                for del_col in _combine_columns:
+                    del welookup_data[del_col]
+                del welookup_data[f'key_{self.lable}']
+                return welookup_data
             else:
-                pass
-        return result
+                return welookup_data
+        else:
+            c = self.Data_orginal_left.columns.tolist()
+            c+= [i+f"_{self.lable}" for i in _needed_columns_deal2]
+            welookup_data.columns = [c]
+            del welookup_data[f'key_{self.lable}']
+            return welookup_data
 
-    def MergeResult_integration(self):
-        left_keys, right_need_columns, result = self.both_merge()
-        integration_columns_all = result.columns.tolist()[len(result.columns.tolist()) -
-                                                   len(left_keys) *
-                                                   (len(right_need_columns) + 1):]
-        for right_need_column in right_need_columns:
-            integration_col = [col for col in integration_columns_all if col.startswith(f'{right_need_column}')]
-            if self.lable:
-                result[f'{right_need_column}_{self.lable}'] = result[integration_col].apply(self.Integration_function,axis=1)
-            else:
-                result[right_need_column] = result[integration_col].apply(self.Integration_function,axis=1)
 
-        for del_col in integration_columns_all:
-            del result[del_col]
-
-        return result
-
+class welookup:
+    def __init__(self, aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns,lable,keep = "first",combine = True):
+        '''
+        -----------------------------------------------------------------------------------------------------------------
+        :param aim_soure: 目标数据源（匹配合并数据）
+        :param match_soure: 需要被合并的数据源
+        :param aim_columns_name: 用于左连接的key列名
+        :param match_columns_name: 用于被连接的key列名
+        :param needed_columns: 需要被匹配到aim_soure中的列名
+        :param lable：输出匹配列的备注标签 例如：备注标签：现金券  匹配的结果：店铺id_现金券
+        :param combine：是否合并多对多匹配出来的多个列
+        -----------------------------------------------------------------------------------------------------------------
+        '''
+        self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns = aim_soure, match_soure, aim_columns_name, match_columns_name, needed_columns
+        self.lable,self.combine = lable,combine
+        self.keep = keep
 
     def summary(self):
-        if self.both_key:
-            result = pd.merge(
-                self.Data_orginal_left,
-                self.Data_orginal_right,
-                on=self.both_key,
-                how='left')
-            return result
-
-        elif self.combine == False:
-            *columns_info,result = self.both_merge()
-            return result
-
-        elif self.combine :
-            result = self.MergeResult_integration()
-            return result
-
-
-
+        '''
+        -----------------------------------------------------------------------------------------------------------------
+        主程序：提取读取数据，进行数据合并
+        -----------------------------------------------------------------------------------------------------------------
+        参数说明：
+        Input_Data(aim_soure[目标数据],match_soure[被匹配数据]) ps:输入的数据类型：dataframe
+        Both_collect(aim_columns_name[目标匹配的key列],match_columns_name[被匹配的key列],needed_columns[需要匹配内容的列],->
+        ->  aim_soure[左表数据源dataframe],match_soure[右表数据源dataframe])  ps:多个列名用“$”分割
+        -----------------------------------------------------------------------------------------------------------------
+        :return: combine_dataframe 是一个数据结构是pandas的Dataframe（合并后的结果）
+        -----------------------------------------------------------------------------------------------------------------
+        '''
+        combine_dataframe = Both_collect(self.aim_soure, self.match_soure, self.aim_columns_name, self.match_columns_name, self.needed_columns,self.lable,self.keep,self.combine).aim_match()
+        return combine_dataframe
 
 
 if __name__ == '__main__':
-    aim = pd.read_excel(
-        r"F:\ljc_file\每日工作\20181127 二遍统计\匹配A.xlsx",
-        converters={
-            '新郎手机': str,
-            '新娘手机': str},
-        keep_default_na=False).fillna("")
-    match = pd.read_csv(r"F:\temp\automation\we_workflow\success\coupon_20181125.csv", converters={'手机号': str},encoding='gbk').fillna("")
-    a = match[match['手机号']!=""].index
-    match = match.loc[a,:]
-    # match = pd.read_excel(
-    #     r"C:\Users\85442\Desktop\20181102余量\测试B短.xlsx",
-    #     converters={
-    #         'loveId': str,
-    #         'loveId2': str},
-    #     keep_default_na=False)
 
-    a= Welookup(left=aim, right=match, left_col='新郎手机$新娘手机', right_col='手机号', need='领券时间',lable='HUE').right_data_deal()
-    c.to_csv(r'F:\ljc_file\每日工作\20181127 二遍统计\测试结果3.csv', index=False,encoding = 'gbk')
+
+    # aim = pd.read_excel(r"F:\ljc_file\每日工作\20181017 地区统计\20181017家装索票地区数据统计_工作记录.xlsx",
+    #                     converters={'索票人手机号': str, '爱人手机号': str})
+    # match = pd.read_hdf(r"F:\ljc_file\data_manage\h5\20180909finally_tab.h5")
+
+
+    result = welookup(aim_soure=aim, match_soure=match, aim_columns_name="索票人手机号$爱人手机号", match_columns_name='新郎手机$新娘手机',
+                   needed_columns='婚博会id$所属省$所属市$所属区$详细地址', lable='终表').summary()
+    print(aim)
+    # run = welookup(aim_dir=sys.argv[1], match_dir=sys.argv, aim_columns_name=sys.argv, match_columns_name=sys.argv,
+    #                match_info=sys.argv)
+
