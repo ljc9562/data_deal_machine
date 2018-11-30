@@ -166,12 +166,5 @@ class Welookup:
 if __name__ == '__main__':
     aim =  pd.read_csv(r"F:\temp\automation\we_workflow\success\test_A.csv",converters={'新郎手机': str,'新娘手机': str,'婚博会id':str},encoding='gbk').fillna("")
     match = pd.read_csv(r"F:\temp\automation\we_workflow\datasoure\20181128wechat_upload.csv", converters={'loveId': str},encoding='gbk').fillna("")
-    # match = pd.read_excel(
-    #     r"C:\Users\85442\Desktop\20181102余量\测试B短.xlsx",
-    #     converters={
-    #         'loveId': str,
-    #         'loveId2': str},
-    #     keep_default_na=False)
-
     c = Welookup(left=aim, right=match, left_col='婚博会id', right_col='loveId', need='微信号',lable='HUE').summary()
     c.to_csv(r'F:\ljc_file\每日工作\20181128\测试结果4.csv', index=False,encoding = 'gbk')
